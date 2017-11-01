@@ -32,9 +32,6 @@ local TauntsList = {
 		185245, --Torment
 	},
 	AOE = {
-		--Warrior
-		114192, --Mocking Banner
-
 		--Paladin
 		204079, --Final Stand
 	},
