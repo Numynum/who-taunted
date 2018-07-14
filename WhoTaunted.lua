@@ -42,10 +42,11 @@ local TauntTypes = {
 	Failed = "Failed",
 };
 local PvPZoneIDs = {
-	978, --Ashran,
-	501, --Wintergrasp,
-	708, --Tol Barad
-	709, --Tol Barad Peninsula
+	588, --Ashran
+	589, --Ashran
+	123, --Wintergrasp
+	244, --Tol Barad
+	245, --Tol Barad Peninsula
 };
 
 function WhoTaunted:OnInitialize()
@@ -81,7 +82,7 @@ function WhoTaunted:UpdateChatWindowsOnEvent(event, ...)
 	WhoTaunted:UpdateChatWindows();
 end
 function WhoTaunted:CombatLog(self, event, ...)
-	local subEvent, hideCaster, srcGUID, srcName, srcFlags, srcFlags2, dstGUID, dstName, dstFlags, dstFlags2, spellID, spellName, spellSchool, extraSpellID, extraSpellName, extraSpellSchool, auraType = select(1, ...);
+	local timestamp, subEvent, hideCaster, srcGUID, srcName, srcFlags, srcFlags2, dstGUID, dstName, dstFlags, dstFlags2, spellID, spellName, spellSchool, extraSpellID, extraSpellName, extraSpellSchool, auraType = CombatLogGetCurrentEventInfo();
 	WhoTaunted:DisplayTaunt(subEvent, srcName, spellID, dstName, extraSpellID, GetServerTime());
 end
 
@@ -100,7 +101,7 @@ function WhoTaunted:RegenEnabledOnEvent(event, ...)
 end
 
 function WhoTaunted:ZoneChangedOnEvent(event, ...)
-	local mapID, isContinent = GetCurrentMapAreaID();
+	local mapID = C_Map.GetBestMapForUnit("player");
 	if (WhoTaunted:IsPvPZone(mapID) == true) and (WhoTaunted.db.profile.DisableInPvPZone == true) then
 		DisableInPvPZone = true;
 	else
