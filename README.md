@@ -6,7 +6,7 @@ https://wow.curseforge.com/projects/who-taunted
 ## About
 Tracks player taunts and displays who they taunted, what ability they used to taunt, and if it failed in some way.
 
-Help localaize on Curseforge! https://www.curseforge.com/wow/addons/who-taunted/localization
+Help localize on Curseforge! https://www.curseforge.com/wow/addons/who-taunted/localization
 
 ## Change Log
 **v1.3.3**
