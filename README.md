@@ -3,12 +3,31 @@ Addon project for World of Warcraft.
 
 https://wow.curseforge.com/projects/who-taunted
 
-https://mods.curse.com/addons/wow/who-taunted
-
 ## About
 Tracks player taunts and displays who they taunted, what ability they used to taunt, and if it failed in some way.
 
+Help localize on Curseforge! https://www.curseforge.com/wow/addons/who-taunted/localization
+
 ## Change Log
+**v1.5**
+* 9.0.1/Shadowlands compatibility.
+* Removed Hunter's Distracting Shot.
+* Re-added Warrior's Challenging Shout under AOE taunts
+* Removed all options pertaining to changing the output of the Taunt messages. In 8.2.5, Blizzard protected the SendChatMessage function so this fixes any errors if the output type for WhoTaunted was set to anything other than "self". The default is now to display to the player (which is normal functionality). I will re-add the options if Blizzard makes any changes in the future.
+
+**v1.4.3**
+* 8.3 compatibility.
+
+**v1.4.2**
+* 8.2 compatibility.
+
+**v1.4.1**
+* 8.1 compatibility.
+
+**v1.4**
+* 8.0.1/Battle for Azeroth compatibility.
+* Adjusted code for API changes.
+
 **v1.3.3**
 * 7.3 compatibility.
 * Fixed issue with Chinese and Russian translations. So sorry about that!

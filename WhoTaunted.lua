@@ -22,9 +22,6 @@ local TauntsList = {
 		--Druid
 		6795, --Growl
 
-		--Hunter
-		20736, --Distracting Shot
-
 		--Monk
 		115546, --Provoke
 
@@ -32,6 +29,9 @@ local TauntsList = {
 		185245, --Torment
 	},
 	AOE = {
+		--Warrior
+		1161, --Challenging Shout
+		
 		--Paladin
 		204079, --Final Stand
 	},
@@ -173,11 +173,12 @@ function WhoTaunted:DisplayTaunt(Event, Name, ID, Target, FailType, Time)
 				return;
 			end
 			if (OutputMessage) and (TauntType) then
-				if (OutputType ~= WhoTaunted.OutputTypes.Self) then
-					if (WhoTaunted.db.profile.Prefix == true) then
-						OutputMessage = L["<WhoTaunted>"].." "..OutputMessage;
-					end
-				end
+				--Removing functionality per issue #3 and SendChatMessage now being protected
+				--if (OutputType ~= WhoTaunted.OutputTypes.Self) then
+				--	if (WhoTaunted.db.profile.Prefix == true) then
+				--		OutputMessage = L["<WhoTaunted>"].." "..OutputMessage;
+				--	end
+				--end
 				WhoTaunted:AddRecentTaunt(Name, ID, Time);
 				WhoTaunted:OutPut(OutputMessage:trim(), OutputType);
 			end
@@ -352,13 +353,14 @@ end
 
 function WhoTaunted:GetOutputType(TauntType)
 	local OutputType = WhoTaunted.OutputTypes.Self;
-	if (TauntType == TauntTypes.Normal) then
-		OutputType = WhoTaunted.db.profile.AnounceTauntsOutput;
-	elseif (TauntType == TauntTypes.AOE) then
-		OutputType = WhoTaunted.db.profile.AnounceAOETauntsOutput;
-	elseif (TauntType == TauntTypes.Failed) then
-		OutputType = WhoTaunted.db.profile.AnounceFailsOutput;
-	end
+	--Removing functionality per issue #3 and SendChatMessage now being protected
+	--if (TauntType == TauntTypes.Normal) then
+	--	OutputType = WhoTaunted.db.profile.AnounceTauntsOutput;
+	--elseif (TauntType == TauntTypes.AOE) then
+	--	OutputType = WhoTaunted.db.profile.AnounceAOETauntsOutput;
+	--elseif (TauntType == TauntTypes.Failed) then
+	--	OutputType = WhoTaunted.db.profile.AnounceFailsOutput;
+	--end
 	return OutputType;
 end
 
@@ -379,7 +381,7 @@ function WhoTaunted:IsChatChannel(ChannelName)
 end
 
 function WhoTaunted:UpdateChatWindows()
-	WhoTaunted.options.args.General.args.ChatWindow.values = WhoTaunted:GetChatWindows();
+	WhoTaunted.options.args.Announcements.args.ChatWindow.values = WhoTaunted:GetChatWindows();
 end
 
 function WhoTaunted:GetChatWindows()
