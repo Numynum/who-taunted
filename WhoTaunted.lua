@@ -22,9 +22,6 @@ local TauntsList = {
 		--Druid
 		6795, --Growl
 
-		--Hunter
-		20736, --Distracting Shot
-
 		--Monk
 		115546, --Provoke
 
@@ -32,6 +29,9 @@ local TauntsList = {
 		185245, --Torment
 	},
 	AOE = {
+		--Warrior
+		1161, --Challenging Shout
+		
 		--Paladin
 		204079, --Final Stand
 	},
