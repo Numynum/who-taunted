@@ -12,11 +12,8 @@
 ## X-Category: Tank
 ## X-Localizations: enUS, deDE, esEs, esMX, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW
 
-embeds.xml
-locales.xml
+load-embeds.xml
+load-locales.xml
 WhoTaunted.lua
-Data\DB\ClassColors.lua
-Data\DB\TauntsList.lua
-Data\DB\PvPZoneIDs.lua
-Data\Options\Options.lua
-Data\Options\Defaults.lua
+load-db.xml
+load-options.xml

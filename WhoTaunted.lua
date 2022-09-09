@@ -381,15 +381,16 @@ function WhoTaunted:PrintToChatWindow(message, ChatWindow)
 end
 
 function WhoTaunted:GetClassColor(Unit)
-	local classId;
-	local ClassColor = "FFFFFF";
+	local classFile;
+	local ClassColor = "00FFFFFF";
 
 	if (Unit) then
-		_, _, classId = UnitClass(Unit);
-		if (classId) then
-			ClassColor = WhoTaunted.ClassColors[classId];
+		_, classFile, _ = UnitClass(Unit);
+		if (classFile) then
+			local color = C_ClassColor.GetClassColor(classFile);
+			ClassColor = color:GenerateHexColor();
 		end
 	end
 
-	return "00"..ClassColor;
+	return ClassColor;
 end
