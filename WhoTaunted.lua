@@ -7,6 +7,20 @@ local BgDisable = false;
 local DisableInPvPZone = false;
 local TauntData = {};
 local RecentTaunts = {};
+local ClassColors = {
+	[1]  = "C69B6D", --Warrior
+	[2]  = "F48CBA", --Paladin
+	[3]  = "AAD372", --Hunter
+	[4]  = "FFF468", --Rogue
+	[5]  = "FFFFFF", --Priest
+	[6]  = "C41E3A", --Death Knight
+	[7]  = "0070DD", --Shaman
+	[8]  = "3FC7EB", --Mage
+	[9]  = "8788EE", --Warlock
+	[10] = "00FF98", --Monk
+	[11] = "FF7C0A", --Druid
+	[12] = "A330C9", --Demon Hunter
+};
 local TauntsList = {
 	SingleTarget = {
 		--Warrior
@@ -31,7 +45,7 @@ local TauntsList = {
 	AOE = {
 		--Warrior
 		1161, --Challenging Shout
-		
+
 		--Paladin
 		204079, --Final Stand
 	},
@@ -417,42 +431,15 @@ function WhoTaunted:PrintToChatWindow(message, ChatWindow)
 end
 
 function WhoTaunted:GetClassColor(Unit)
-	local localizedclass = nil;
-	local ClassColor = nil;
+	local classId;
+	local ClassColor = "FFFFFF";
+
 	if (Unit) then
-		localizedclass = UnitClass(Unit);
-		if (localizedclass) then
-			if (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_MALE["DEATHKNIGHT"])) or (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_FEMALE["DEATHKNIGHT"])) then
-				ClassColor = "00C41F3B";
-			elseif (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_MALE["DRUID"])) or (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_FEMALE["DRUID"])) then
-				ClassColor = "00FF7D0A";
-			elseif (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_MALE["HUNTER"])) or (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_FEMALE["HUNTER"])) then
-				ClassColor = "00ABD473";
-			elseif (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_MALE["MAGE"])) or (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_FEMALE["MAGE"])) then
-				ClassColor = "0069CCF0";
-			elseif (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_MALE["MONK"])) or (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_FEMALE["MONK"])) then
-				ClassColor = "0000FF96";
-			elseif (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_MALE["PALADIN"])) or (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_FEMALE["PALADIN"])) then
-				ClassColor = "00F58CBA";
-			elseif (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_MALE["PRIEST"])) or (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_FEMALE["PRIEST"])) then
-				ClassColor = "00FFFFFF";
-			elseif (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_MALE["ROGUE"])) or (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_FEMALE["ROGUE"])) then
-				ClassColor = "00FFF569";
-				elseif (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_MALE["DEMONHUNTER"])) or (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_FEMALE["DEMONHUNTER"])) then
-				ClassColor = "00A330C9";
-			elseif (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_MALE["SHAMAN"])) or (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_FEMALE["SHAMAN"])) then
-				ClassColor = "002459FF";
-			elseif (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_MALE["WARLOCK"])) or (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_FEMALE["WARLOCK"])) then
-				ClassColor = "009482CA";
-			elseif (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_MALE["WARRIOR"])) or (string.lower(localizedclass) == string.lower(LOCALIZED_CLASS_NAMES_FEMALE["WARRIOR"])) then
-				ClassColor = "00C79C6E";
-			end
+		_, _, classId = UnitClass(Unit);
+		if (classId) then
+			ClassColor = ClassColors[classId];
 		end
 	end
 
-	if (ClassColor == nil) then
-		ClassColor = "00FFFFFF";
-	end
-
-	return ClassColor;
+	return "00"..ClassColor;
 end
