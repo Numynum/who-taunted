@@ -7,60 +7,10 @@ local BgDisable = false;
 local DisableInPvPZone = false;
 local TauntData = {};
 local RecentTaunts = {};
-local ClassColors = {
-	[1]  = "C69B6D", --Warrior
-	[2]  = "F48CBA", --Paladin
-	[3]  = "AAD372", --Hunter
-	[4]  = "FFF468", --Rogue
-	[5]  = "FFFFFF", --Priest
-	[6]  = "C41E3A", --Death Knight
-	[7]  = "0070DD", --Shaman
-	[8]  = "3FC7EB", --Mage
-	[9]  = "8788EE", --Warlock
-	[10] = "00FF98", --Monk
-	[11] = "FF7C0A", --Druid
-	[12] = "A330C9", --Demon Hunter
-};
-local TauntsList = {
-	SingleTarget = {
-		--Warrior
-		355, --Taunt
-
-		--Death Knight
-		51399, --Death Grip for Blood (49576 is now just the pull effect)
-		56222, --Dark Command
-
-		--Paladin
-		62124, --Hand of Reckoning
-
-		--Druid
-		6795, --Growl
-
-		--Monk
-		115546, --Provoke
-
-		--Demon Hunter
-		185245, --Torment
-	},
-	AOE = {
-		--Warrior
-		1161, --Challenging Shout
-
-		--Paladin
-		204079, --Final Stand
-	},
-};
 local TauntTypes = {
 	Normal = "Normal",
 	AOE = "AOE",
 	Failed = "Failed",
-};
-local PvPZoneIDs = {
-	588, --Ashran
-	589, --Ashran
-	123, --Wintergrasp
-	244, --Tol Barad
-	245, --Tol Barad Peninsula
 };
 
 function WhoTaunted:OnInitialize()
@@ -202,13 +152,13 @@ end
 
 function WhoTaunted:IsTaunt(SpellID)
 	local IsTaunt, TauntType = false, "";
-	for k, v in pairs(TauntsList.SingleTarget) do
+	for k, v in pairs(WhoTaunted.TauntsList.SingleTarget) do
 		if (GetSpellInfo(v) == GetSpellInfo(SpellID)) then
 			IsTaunt, TauntType = true, TauntTypes.Normal;
 			break;
 		end
 	end
-	for k, v in pairs(TauntsList.AOE) do
+	for k, v in pairs(WhoTaunted.TauntsList.AOE) do
 		if (GetSpellInfo(v) == GetSpellInfo(SpellID)) then
 			IsTaunt, TauntType = true, TauntTypes.AOE;
 			break;
@@ -220,7 +170,7 @@ end
 function WhoTaunted:IsPvPZone(MapID)
 	local IsPvPZone = false;
 	if (MapID) and (type(MapID) == "number") then
-		for k, v in pairs(PvPZoneIDs) do
+		for k, v in pairs(WhoTaunted.PvPZoneIDs) do
 			if (MapID == v) then
 				IsPvPZone = true;
 				break;
@@ -437,7 +387,7 @@ function WhoTaunted:GetClassColor(Unit)
 	if (Unit) then
 		_, _, classId = UnitClass(Unit);
 		if (classId) then
-			ClassColor = ClassColors[classId];
+			ClassColor = WhoTaunted.ClassColors[classId];
 		end
 	end
 

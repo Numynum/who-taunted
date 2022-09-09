@@ -15,5 +15,8 @@
 embeds.xml
 locales.xml
 WhoTaunted.lua
-Data\Options.lua
-Data\Defaults.lua
+Data\DB\ClassColors.lua
+Data\DB\TauntsList.lua
+Data\DB\PvPZoneIDs.lua
+Data\Options\Options.lua
+Data\Options\Defaults.lua
