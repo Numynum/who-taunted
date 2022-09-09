@@ -38,6 +38,7 @@ L["Hide Own Taunts"] = true
 L["Immune"] = true
 L["Include Prefix"] = true
 L["Include the"] = true
+L["on Black Ox Statue"] = true
 L["Party"] = true
 L["prefix when a message's output is"] = true
 L["Raid"] = true

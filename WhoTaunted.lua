@@ -12,6 +12,11 @@ local TauntTypes = {
 	AOE = "AOE",
 	Failed = "Failed",
 };
+local Env = {
+	DeathGrip = 49576,
+	Provoke = 115546,
+	BlackOxStatue = 61146,
+};
 
 function WhoTaunted:OnInitialize()
 	WhoTaunted:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorldOnEvent")
@@ -47,7 +52,7 @@ function WhoTaunted:UpdateChatWindowsOnEvent(event, ...)
 end
 function WhoTaunted:CombatLog(self, event, ...)
 	local timestamp, subEvent, hideCaster, srcGUID, srcName, srcFlags, srcFlags2, dstGUID, dstName, dstFlags, dstFlags2, spellID, spellName, spellSchool, extraSpellID, extraSpellName, extraSpellSchool, auraType = CombatLogGetCurrentEventInfo();
-	WhoTaunted:DisplayTaunt(subEvent, srcName, spellID, dstName, extraSpellID, GetServerTime());
+	WhoTaunted:DisplayTaunt(subEvent, srcName, spellID, dstGUID, dstName, extraSpellID, GetServerTime());
 end
 
 function WhoTaunted:EnteringWorldOnEvent(event, ...)
@@ -77,7 +82,7 @@ function WhoTaunted:ChatCommand()
 	InterfaceOptionsFrame_OpenToCategory("Who Taunted?");
 end
 
-function WhoTaunted:DisplayTaunt(Event, Name, ID, Target, FailType, Time)
+function WhoTaunted:DisplayTaunt(Event, Name, ID, TargetGUID, Target, FailType, Time)
 	if (Event) and (Name) and (ID) and (Time) and (WhoTaunted:IsRecentTaunt(Name, ID, Time) == false) then
 		if (WhoTaunted.db.profile.Disabled == false) and (BgDisable == false) and (DisableInPvPZone == false) and (UnitIsPlayer(Name)) and ((UnitInParty("player")) or (UnitInRaid("player"))) and ((UnitInParty(Name)) or (UnitInRaid(Name))) then
 			local OutputMessage = nil;
@@ -85,7 +90,7 @@ function WhoTaunted:DisplayTaunt(Event, Name, ID, Target, FailType, Time)
 			local OutputType;
 
 			--Ignore Death Grip Pull Effect for non-Blood Specs
-			if (ID == 49576) then
+			if (ID == Env.DeathGrip) then
 				return;
 			end
 
@@ -107,7 +112,7 @@ function WhoTaunted:DisplayTaunt(Event, Name, ID, Target, FailType, Time)
 				end
 			elseif (Event == "SPELL_CAST_SUCCESS") then
 				IsTaunt, TauntType = WhoTaunted:IsTaunt(ID);
-				if (not Target) or (not IsTaunt) or (TauntType == TauntTypes.Normal) or ((TauntType == TauntTypes.AOE) and (WhoTaunted.db.profile.AnounceAOETaunts == false)) or ((WhoTaunted.db.profile.HideOwnTaunts == true) and (Name == PlayerName)) then
+				if (not Target) or (not IsTaunt) or ((TauntType == TauntTypes.Normal) and (ID ~= Env.Provoke)) or ((TauntType == TauntTypes.AOE) and (WhoTaunted.db.profile.AnounceAOETaunts == false)) or ((WhoTaunted.db.profile.HideOwnTaunts == true) and (Name == PlayerName)) then
 					return;
 				end
 				OutputType = WhoTaunted:GetOutputType(TauntType);
@@ -116,10 +121,16 @@ function WhoTaunted:DisplayTaunt(Event, Name, ID, Target, FailType, Time)
 					Spell = GetSpellInfo(ID);
 				end
 
-				if (TauntType == TauntTypes.Normal) then
-					OutputMessage = WhoTaunted:OutputMessageNormal(Name, Target, Spell, OutputType);
-				elseif (TauntType == TauntTypes.AOE) then
+				--Monk AOE Taunt for casting Provoke (115546) on Black Ox Statue (61146)
+				if (ID == Env.Provoke) and (TargetGUID) and (string.match(TargetGUID, tostring(Env.BlackOxStatue))) then
+					IsTaunt, TauntType = true, TauntTypes.AOE;
 					OutputMessage = WhoTaunted:OutputMessageAOE(Name, Target, Spell, ID, OutputType);
+				else
+					if (TauntType == TauntTypes.Normal) then
+						OutputMessage = WhoTaunted:OutputMessageNormal(Name, Target, Spell, OutputType);
+					elseif (TauntType == TauntTypes.AOE) then
+						OutputMessage = WhoTaunted:OutputMessageAOE(Name, Target, Spell, ID, OutputType);
+					end
 				end
 			elseif (Event == "SPELL_MISSED") then
 				IsTaunt, TauntType = WhoTaunted:IsTaunt(ID);
@@ -152,18 +163,18 @@ end
 
 function WhoTaunted:IsTaunt(SpellID)
 	local IsTaunt, TauntType = false, "";
-	for k, v in pairs(WhoTaunted.TauntsList.SingleTarget) do
-		if (GetSpellInfo(v) == GetSpellInfo(SpellID)) then
-			IsTaunt, TauntType = true, TauntTypes.Normal;
-			break;
+		for k, v in pairs(WhoTaunted.TauntsList.SingleTarget) do
+			if (GetSpellInfo(v) == GetSpellInfo(SpellID)) then
+				IsTaunt, TauntType = true, TauntTypes.Normal;
+				break;
+			end
 		end
-	end
-	for k, v in pairs(WhoTaunted.TauntsList.AOE) do
-		if (GetSpellInfo(v) == GetSpellInfo(SpellID)) then
-			IsTaunt, TauntType = true, TauntTypes.AOE;
-			break;
+		for k, v in pairs(WhoTaunted.TauntsList.AOE) do
+			if (GetSpellInfo(v) == GetSpellInfo(SpellID)) then
+				IsTaunt, TauntType = true, TauntTypes.AOE;
+				break;
+			end
 		end
-	end
 	return IsTaunt, TauntType;
 end
 
@@ -233,7 +244,12 @@ function WhoTaunted:OutputMessageAOE(Name, Target, Spell, ID, OutputType)
 
 	OutputMessage = "lc1"..Name.."lr1 "..L["AOE"].." "..L["taunted"];
 	if (WhoTaunted.db.profile.DisplayAbility == true) then
-		OutputMessage = OutputMessage.." "..L["using"].." "..Spell..".";
+		if (ID == Env.Provoke) then
+			--Monk AOE Taunt for casting Provoke (115546) on Black Ox Statue (61146)
+			OutputMessage = OutputMessage.." "..L["using"].." "..Spell.." "..L["on Black Ox Statue"]..".";
+		else
+			OutputMessage = OutputMessage.." "..L["using"].." "..Spell..".";
+		end
 	else
 		OutputMessage = OutputMessage..".";
 	end
