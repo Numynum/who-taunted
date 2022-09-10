@@ -368,8 +368,12 @@ function WhoTaunted:GetChatWindows()
 	local ChatWindows = {};
 	for i = 1, NUM_CHAT_WINDOWS, 1 do
 		local name, fontSize, r, g, b, alpha, shown, locked, docked, uninteractable = GetChatWindowInfo(i);
-		if (name) and (tostring(name) ~= COMBAT_LOG) and (name:trim() ~= "") then
+		if (name) and (tostring(name) ~= COMBAT_LOG) and (tostring(name) ~= VOICE) and (name:trim() ~= "") then
 			ChatWindows[tostring(name)] = tostring(name);
+
+			if (WhoTaunted.db) and (WhoTaunted.db.profile.ChatWindow == "") then
+				WhoTaunted.db.profile.ChatWindow = tostring(name);
+			end
 		end
 	end
 	return ChatWindows;
