@@ -3,11 +3,10 @@ local L = LibStub("AceLocale-3.0"):GetLocale("WhoTaunted");
 
 WhoTaunted.OutputTypes = {
     Self = L["Self"],
-    Party = L["Party"],
-    Raid = L["Raid"],
-    RaidWarning = L["Raid Warning"],
-    Say = L["Say"],
-    Yell = L["Yell"]
+    Party = CHAT_MSG_PARTY,
+    Raid = CHAT_MSG_RAID,
+    RaidWarning = CHAT_MSG_RAID_WARNING,
+    Officer = CHAT_MSG_OFFICER,
 };
 
 WhoTaunted.options = {
@@ -25,17 +24,19 @@ WhoTaunted.options = {
             desc = L["Disables Who Taunted?."],
             width = "full",
             get = function(info)
+                WhoTaunted:CheckOptions();
                 return WhoTaunted.db.profile.Disabled;
             end,
             set = function(info, v)
                 WhoTaunted.db.profile.Disabled = v;
+                WhoTaunted:CheckOptions();
             end,
             order = 20
         },
         General = {
             name = L["General"],
             type = "group",
-            -- guiInline = true,
+            guiInline = true,
             disabled = false,
             order = 30,
             args = {
@@ -121,23 +122,26 @@ WhoTaunted.options = {
         Announcements = {
             name = L["Announcements"],
             type = "group",
+            guiInline = true,
             disabled = false,
             order = 40,
             args = {
-                ChatWindow = {
-                    type = "select",
-                    values = WhoTaunted:GetChatWindows(),
-                    name = L["Chat Window"],
-					desc = L["The chat window taunts will be announced in when the output is set to"].." "..WhoTaunted.OutputTypes.Self..".",
-                    width = "100",
-                    get = function(info)
-                        return WhoTaunted.db.profile.ChatWindow;
+                AnounceTauntsOutput = {
+					type = "select",
+					values = WhoTaunted.OutputTypes,
+					name = L["Anounce Taunts Output:"],
+					desc = L["Where taunts will be announced."],
+					width = "100",
+					get = function(info)
+                        WhoTaunted:CheckOptions();
+                        return WhoTaunted.db.profile.AnounceTauntsOutput;
                     end,
-                    set = function(info, v)
-                        WhoTaunted.db.profile.ChatWindow = v;
+					set = function(info, v)
+                        WhoTaunted.db.profile.AnounceTauntsOutput = v;
+                        WhoTaunted:CheckOptions();
                     end,
-                    order = 10
-                },
+					order = 10
+				},
                 AnounceTaunts = {
                     type = "toggle",
                     name = L["Anounce Taunts"],
@@ -176,6 +180,31 @@ WhoTaunted.options = {
                         WhoTaunted.db.profile.AnounceFails = v;
                     end,
                     order = 40
+                },
+                Prefix = {
+					type = "toggle",
+                    disabled = false,
+					name = L["Include Prefix"],
+					desc = L["Include the"].." '"..L["<WhoTaunted>"].."' "..L["prefix when a message's output is"].." "..WhoTaunted.OutputTypes.Party..", "..WhoTaunted.OutputTypes.Raid..", "..L["etc"]..".",
+					width = "full",
+					get = function(info) return WhoTaunted.db.profile.Prefix; end,
+					set = function(info, v) WhoTaunted.db.profile.Prefix = v; end,
+					order = 50
+				},
+                ChatWindow = {
+                    type = "select",
+                    values = WhoTaunted:GetChatWindows(),
+                    disabled = false,
+                    name = L["Chat Window"],
+					desc = L["The chat window taunts will be announced in when the output is set to"].." "..WhoTaunted.OutputTypes.Self..".",
+                    width = "100",
+                    get = function(info)
+                        return WhoTaunted.db.profile.ChatWindow;
+                    end,
+                    set = function(info, v)
+                        WhoTaunted.db.profile.ChatWindow = v;
+                    end,
+                    order = 60
                 }
             }
         }

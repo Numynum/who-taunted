@@ -43,11 +43,7 @@ function WhoTaunted:OnEnable()
 		WhoTaunted.db.profile.AnounceFailsOutput = WhoTaunted.OutputTypes.Self;
 	end
 
-	--Disable Righteous Defense options if the client is Classic Era or Mists
-	if (tocVersion) and ((tocVersion >= 50000) or (tocVersion < 20000)) then
-		WhoTaunted.db.profile.RighteousDefenseTarget = false;
-		WhoTaunted.options.args.General.args.RighteousDefenseTarget.hidden = true;
-	end
+	WhoTaunted:CheckOptions();
 end
 
 function WhoTaunted:OnDisable()
@@ -88,6 +84,32 @@ end
 
 function WhoTaunted:ChatCommand()
 	InterfaceOptionsFrame_OpenToCategory("Who Taunted?");
+end
+
+function WhoTaunted:CheckOptions()
+	--Disable Righteous Defense options if the client is Classic Era or Mists
+	if (tocVersion) and ((tocVersion >= 50000) or (tocVersion < 20000)) then
+		WhoTaunted.db.profile.RighteousDefenseTarget = false;
+		WhoTaunted.options.args.General.args.RighteousDefenseTarget.hidden = true;
+	end
+
+	if (WhoTaunted.db.profile.AnounceTauntsOutput ~= WhoTaunted.OutputTypes.Self) then
+		WhoTaunted.options.args.Announcements.args.ChatWindow.disabled = true;
+		WhoTaunted.options.args.Announcements.args.Prefix.disabled = false;
+	else
+		WhoTaunted.options.args.Announcements.args.ChatWindow.disabled = false;
+		WhoTaunted.options.args.Announcements.args.Prefix.disabled = true;
+	end
+
+	if (WhoTaunted.db.profile.Disabled == true) then
+		WhoTaunted.options.args.General.disabled = true;
+		WhoTaunted.options.args.Announcements.disabled = true;
+		WhoTaunted.options.args.Announcements.args.ChatWindow.disabled = true;
+		WhoTaunted.options.args.Announcements.args.Prefix.disabled = true;
+	else
+		WhoTaunted.options.args.General.disabled = false;
+		WhoTaunted.options.args.Announcements.disabled = false;
+	end
 end
 
 function WhoTaunted:DisplayTaunt(Event, Name, ID, TargetGUID, Target, FailType, Time)
@@ -156,12 +178,11 @@ function WhoTaunted:DisplayTaunt(Event, Name, ID, TargetGUID, Target, FailType, 
 				return;
 			end
 			if (OutputMessage) and (TauntType) then
-				--Removing functionality per issue #3 and SendChatMessage now being protected
-				--if (OutputType ~= WhoTaunted.OutputTypes.Self) then
-				--	if (WhoTaunted.db.profile.Prefix == true) then
-				--		OutputMessage = L["<WhoTaunted>"].." "..OutputMessage;
-				--	end
-				--end
+				if (OutputType ~= WhoTaunted.OutputTypes.Self) then
+					if (WhoTaunted.db.profile.Prefix == true) then
+						OutputMessage = L["<WhoTaunted>"].." "..OutputMessage;
+					end
+				end
 				WhoTaunted:AddRecentTaunt(Name, ID, Time);
 				WhoTaunted:OutPut(OutputMessage:trim(), OutputType);
 			end
@@ -298,11 +319,11 @@ function WhoTaunted:OutPut(msg, output, dest)
 		output = WhoTaunted.OutputTypes.Self;
 	end
 	if (msg) then
-		if (string.lower(output) == "raid") then
+		if (string.lower(output) == string.lower(WhoTaunted.OutputTypes.Raid)) then
 			if (IsInRaid()) and (GetNumGroupMembers() >= 1) then
 				ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "RAID");
 			end
-		elseif (string.lower(output) == "raidwarning") or (string.lower(output) == "rw") then
+		elseif (string.lower(output) == string.lower(WhoTaunted.OutputTypes.RaidWarning)) or (string.lower(output) == string.lower(CHAT_MSG_RAID_WARNING):gsub(" ", "")) then
 			if (IsInRaid()) and (GetNumGroupMembers() >= 1) then
 				local isLeader = UnitIsGroupLeader("player");
 				local isAssistant = UnitIsGroupAssistant("player");
@@ -312,47 +333,32 @@ function WhoTaunted:OutPut(msg, output, dest)
 					ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "RAID");
 				end
 			end
-		elseif (string.lower(output) == "party") then
+		elseif (string.lower(output) == string.lower(WhoTaunted.OutputTypes.Party)) then
 			local isInParty = UnitInParty("player");
 			if (isInParty) and (isInParty == true) and (GetNumSubgroupMembers() >= 1) then
 				ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "PARTY");
 			end
-		elseif (string.lower(output) == "say") then
-			ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "SAY");
-		elseif (string.lower(output) == "yell") then
-			ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "YELL");
-		elseif (string.lower(output) == "whisper") and (dest) then
-			ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "WHISPER", nil, dest);
-		elseif (string.lower(output) == "guild") then
-			ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "GUILD");
-		elseif (string.lower(output) == "officer") then
+		elseif (string.lower(output) == string.lower(WhoTaunted.OutputTypes.Officer)) then
 			ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "OFFICER");
-		elseif (string.lower(output) == "channel") and (dest) and (WhoTaunted:IsChatChannel(dest) == true) then
-			local id, name = GetChannelName(dest);
-			if (id > 0) and (name ~= nil) then
-				ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "CHANNEL", nil, id);
-			end
-		elseif (string.lower(output) == "print") or (string.lower(output) == "self") then
+		elseif (string.lower(output) == string.lower(WhoTaunted.OutputTypes.Self)) then
 			if (WhoTaunted:IsChatWindow(WhoTaunted.db.profile.ChatWindow) == true) then
 				WhoTaunted:PrintToChatWindow(tostring(msg), WhoTaunted.db.profile.ChatWindow)
-			else
-				WhoTaunted.db.profile.ChatWindow = "";
-				WhoTaunted:Print(tostring(msg));
 			end
+		else
+			WhoTaunted:Print(tostring(msg));
 		end
 	end
 end
 
 function WhoTaunted:GetOutputType(TauntType)
 	local OutputType = WhoTaunted.OutputTypes.Self;
-	--Removing functionality per issue #3 and SendChatMessage now being protected
-	--if (TauntType == TauntTypes.Normal) then
-	--	OutputType = WhoTaunted.db.profile.AnounceTauntsOutput;
-	--elseif (TauntType == TauntTypes.AOE) then
-	--	OutputType = WhoTaunted.db.profile.AnounceAOETauntsOutput;
-	--elseif (TauntType == TauntTypes.Failed) then
-	--	OutputType = WhoTaunted.db.profile.AnounceFailsOutput;
-	--end
+	if (TauntType == TauntTypes.Normal) then
+		OutputType = WhoTaunted.db.profile.AnounceTauntsOutput;
+	elseif (TauntType == TauntTypes.AOE) then
+		OutputType = WhoTaunted.db.profile.AnounceAOETauntsOutput;
+	elseif (TauntType == TauntTypes.Failed) then
+		OutputType = WhoTaunted.db.profile.AnounceFailsOutput;
+	end
 	return OutputType;
 end
 
