@@ -43,8 +43,8 @@ function WhoTaunted:OnInitialize()
 
 	WhoTaunted.db = LibStub("AceDB-3.0"):New("WhoTauntedDB", WhoTaunted.defaults, "Default");
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("WhoTaunted", WhoTaunted.options);
-	AceConfig:AddToBlizOptions("WhoTaunted", "Who Taunted?");
 	WhoTaunted.options.args.Profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(WhoTaunted.db);
+	AceConfig:AddToBlizOptions("WhoTaunted", "Who Taunted?");
 
 	--Convert the old Options "profile" to the new "Default"
 	if (WhoTaunted.db:GetCurrentProfile() == "profile") then
@@ -52,6 +52,8 @@ function WhoTaunted:OnInitialize()
 		WhoTaunted.db:CopyProfile("profile", true);
 		WhoTaunted.db:DeleteProfile("profile", true);
 	end
+
+	WhoTaunted:Print("|cffffff78v"..GetAddOnMetadata("WhoTaunted", "Version").."|r "..L["has loaded! Please report any issues on GitHub"].." - |cffffff78https://github.com/Davie3/who-taunted/issues|r");
 end
 
 function WhoTaunted:OnEnable()
@@ -102,7 +104,7 @@ end
 
 function WhoTaunted:ChatCommand(input)
 	if (not input) or (input:trim() == "") then
-			InterfaceOptionsFrame_OpenToCategory("Who Taunted?");
+		InterfaceOptionsFrame_OpenToCategory("Who Taunted?");
 	end
 end
 
@@ -188,13 +190,17 @@ function WhoTaunted:IsTaunt(SpellID)
 	local IsTaunt, TauntType = false, "";
 
 	for k, v in pairs(WhoTaunted.TauntsList.SingleTarget) do
-		if (GetSpellInfo(v) == GetSpellInfo(SpellID)) then
+		local spellTauntList = GetSpellInfo(v);
+		local spell = GetSpellInfo(SpellID);
+		if (spellTauntList) and (spell) and (spellTauntList == spell) then
 			IsTaunt, TauntType = true, TauntTypes.Normal;
 			break;
 		end
 	end
 	for k, v in pairs(WhoTaunted.TauntsList.AOE) do
-		if (GetSpellInfo(v) == GetSpellInfo(SpellID)) then
+		local spellTauntList = GetSpellInfo(v);
+		local spell = GetSpellInfo(SpellID);
+		if (spellTauntList) and (spell) and (spellTauntList == spell) then
 			IsTaunt, TauntType = true, TauntTypes.AOE;
 			break;
 		end
@@ -233,7 +239,9 @@ function WhoTaunted:IsRecentTaunt(TauntName, TauntID, TauntTime)
 
 	if (TauntName) and (TauntID) and (TauntTime) and (type(TauntTime) == "number") then
 		for k, v in pairs(RecentTaunts) do
-			if (RecentTaunts[k].Name == TauntName) and (GetSpellInfo(RecentTaunts[k].ID) == GetSpellInfo(TauntID)) and (RecentTaunts[k].TimeStamp == TauntTime) then
+			local spellRecentTaunt = GetSpellInfo(RecentTaunts[k].ID);
+			local spell = GetSpellInfo(TauntID);
+			if (spellRecentTaunt) and (spell) and (RecentTaunts[k].Name == TauntName) and (spellRecentTaunt == spell) and (RecentTaunts[k].TimeStamp == TauntTime) then
 				IsRecentTaunt = true;
 				break;
 			end
@@ -251,7 +259,7 @@ function WhoTaunted:OutputMessageNormal(Name, Target, Spell, OutputType)
 	local OutputMessage = nil;
 
 	OutputMessage = Env.Left.One..Name..Env.Right.One.." "..L["taunted"].." "..Target;
-	if (WhoTaunted.db.profile.DisplayAbility == true) then
+	if (Spell) and (WhoTaunted.db.profile.DisplayAbility == true) then
 		OutputMessage = OutputMessage.." "..L["using"].." "..Spell..".";
 	else
 		OutputMessage = OutputMessage..".";
@@ -270,7 +278,7 @@ function WhoTaunted:OutputMessageAOE(Name, Target, Spell, ID, OutputType)
 	local OutputMessage = nil;
 
 	OutputMessage = Env.Left.One..Name..Env.Right.One.." "..L["AOE"].." "..L["taunted"];
-	if (WhoTaunted.db.profile.DisplayAbility == true) then
+	if (Spell) and (WhoTaunted.db.profile.DisplayAbility == true) then
 		if (ID == Env.Provoke) then
 			--Monk AOE Taunt for casting Provoke (115546) on Black Ox Statue (61146)
 			OutputMessage = OutputMessage.." "..L["using"].." "..Spell.." "..L["on Black Ox Statue"]..".";
@@ -298,7 +306,7 @@ function WhoTaunted:OutputMessageFailed(Name, Target, Spell, ID, OutputType, Fai
 	local OutputMessage = nil;
 
 	OutputMessage = Env.Left.One..Name..L["'s"]..Env.Right.One.." "..L["taunt"];
-	if (WhoTaunted.db.profile.DisplayAbility == true) then
+	if (Spell) and (WhoTaunted.db.profile.DisplayAbility == true) then
 		OutputMessage = OutputMessage.." "..Spell;
 	end
 	OutputMessage = OutputMessage.." "..L["against"].." "..Target.." "..Env.Left.Two..string.upper(L["Failed:"].." "..FailType)..Env.Right.Two.."!";
@@ -437,4 +445,15 @@ function WhoTaunted:GetClassColor(Unit)
 	end
 
 	return ClassColor;
+end
+
+function WhoTaunted:GetSpellName(ID)
+	local spellName = "";
+
+	local name, _, _, _, _, _, _ = GetSpellInfo(ID);
+	if (name) then
+		spellName = name;
+	end
+
+	return spellName;
 end

@@ -1,5 +1,9 @@
 ﻿local WhoTaunted = WhoTaunted;
 local L = LibStub("AceLocale-3.0"):GetLocale("WhoTaunted");
+local version, build, date, tocVersion = GetBuildInfo();
+local Env = {
+	RighteousDefense = 31789,
+}
 
 WhoTaunted.OutputTypes = {
     Self = L["Self"],
@@ -125,8 +129,8 @@ WhoTaunted.options = {
                 RighteousDefenseTarget = {
 					type = "toggle",
                     hidden = false,
-					name = L["Show"].." "..GetSpellInfo(31789).." "..L["Target"],
-					desc = L["Show"].." "..LOCALIZED_CLASS_NAMES_MALE["PALADIN"].."'s".." "..GetSpellInfo(31789).." "..string.lower(L["Target"])..".",
+					name = L["Show"].." "..WhoTaunted:GetSpellName(Env.RighteousDefense).." "..L["Target"],
+					desc = L["Show"].." "..LOCALIZED_CLASS_NAMES_MALE["PALADIN"].."'s".." "..WhoTaunted:GetSpellName(Env.RighteousDefense).." "..string.lower(L["Target"])..".",
 					width = "full",
 					get = function(info) return WhoTaunted.db.profile.RighteousDefenseTarget; end,
 					set = function(info, v) WhoTaunted.db.profile.RighteousDefenseTarget = v; end,
@@ -287,7 +291,7 @@ WhoTaunted.options = {
                 },
                 line2 = {
                     type = "description",
-                    name = L["Issues can be reported on the Who Taunted? Github page"].." - |cffffff78https://github.com/Davie3/who-taunted/issues|r",
+                    name = L["Issues can be reported on the Who Taunted? GitHub page"].." - |cffffff78https://github.com/Davie3/who-taunted/issues|r",
                     order = 20,
                 },
                 line3 = {
