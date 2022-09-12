@@ -10,7 +10,7 @@ local TauntData = {};
 local RecentTaunts = {};
 local TauntTypes = {
 	Normal = "Normal",
-	AOE = "AOE",
+	AOE    = "AOE",
 	Failed = "Failed",
 };
 local Env = {
@@ -18,6 +18,16 @@ local Env = {
 	Provoke = 115546,
 	BlackOxStatue = 61146,
 	RighteousDefense = 31789,
+	Left = {
+		Base = "|c",
+		One  = "lc1",
+		Two  = "lc2",
+	},
+	Right = {
+		Base = "|r",
+		One  = "lr1",
+		Two  = "lr2",
+	},
 };
 
 function WhoTaunted:OnInitialize()
@@ -281,7 +291,7 @@ end
 function WhoTaunted:OutputMessageNormal(Name, Target, Spell, OutputType)
 	local OutputMessage = nil;
 
-	OutputMessage = "lc1"..Name.."lr1 "..L["taunted"].." "..Target;
+	OutputMessage = Env.Left.One..Name..Env.Right.One.." "..L["taunted"].." "..Target;
 	if (WhoTaunted.db.profile.DisplayAbility == true) then
 		OutputMessage = OutputMessage.." "..L["using"].." "..Spell..".";
 	else
@@ -289,9 +299,9 @@ function WhoTaunted:OutputMessageNormal(Name, Target, Spell, OutputType)
 	end
 
 	if (OutputType == WhoTaunted.OutputTypes.Self) then
-		OutputMessage = OutputMessage:gsub("lc1", "|c"..WhoTaunted:GetClassColor(Name)):gsub("lr1", "|r");
+		OutputMessage = OutputMessage:gsub(Env.Left.One, Env.Left.Base..WhoTaunted:GetClassColor(Name)):gsub(Env.Right.One, Env.Right.Base);
 	else
-		OutputMessage = OutputMessage:gsub("lc1", ""):gsub("lr1", "");
+		OutputMessage = OutputMessage:gsub(Env.Left.One, ""):gsub(Env.Right.One, "");
 	end
 
 	return OutputMessage;
@@ -300,7 +310,7 @@ end
 function WhoTaunted:OutputMessageAOE(Name, Target, Spell, ID, OutputType)
 	local OutputMessage = nil;
 
-	OutputMessage = "lc1"..Name.."lr1 "..L["AOE"].." "..L["taunted"];
+	OutputMessage = Env.Left.One..Name..Env.Right.One.." "..L["AOE"].." "..L["taunted"];
 	if (WhoTaunted.db.profile.DisplayAbility == true) then
 		if (ID == Env.Provoke) then
 			--Monk AOE Taunt for casting Provoke (115546) on Black Ox Statue (61146)
@@ -308,7 +318,7 @@ function WhoTaunted:OutputMessageAOE(Name, Target, Spell, ID, OutputType)
 		else
 			--Show the Righteous Defense Target if the option is toggled (and supported in the WoW Client)
 			if (Target) and (ID == Env.RighteousDefense) and (WhoTaunted.db.profile.RighteousDefenseTarget == true) then
-				OutputMessage = OutputMessage.." "..L["off of"].." lc2"..Target.."lr2";
+				OutputMessage = OutputMessage.." "..L["off of"].." "..Env.Left.Two..Target..Env.Right.Two;
 			end
 			OutputMessage = OutputMessage.." "..L["using"].." "..Spell..".";
 		end
@@ -317,9 +327,9 @@ function WhoTaunted:OutputMessageAOE(Name, Target, Spell, ID, OutputType)
 	end
 
 	if (OutputType == WhoTaunted.OutputTypes.Self) then
-		OutputMessage = OutputMessage:gsub("lc1", "|c"..WhoTaunted:GetClassColor(Name)):gsub("lr1", "|r"):gsub("lc2", "|c"..WhoTaunted:GetClassColor(Target)):gsub("lr2", "|r");
+		OutputMessage = OutputMessage:gsub(Env.Left.One, Env.Left.Base..WhoTaunted:GetClassColor(Name)):gsub(Env.Right.One, Env.Right.Base):gsub(Env.Left.Two, Env.Left.Base..WhoTaunted:GetClassColor(Target)):gsub(Env.Right.Two, Env.Right.Base);
 	else
-		OutputMessage = OutputMessage:gsub("lc1", ""):gsub("lr1", ""):gsub("lc2", ""):gsub("lr2", "");
+		OutputMessage = OutputMessage:gsub(Env.Left.One, ""):gsub(Env.Right.One, ""):gsub(Env.Left.Two, ""):gsub(Env.Right.Two, "");
 	end
 
 	return OutputMessage;
@@ -328,16 +338,16 @@ end
 function WhoTaunted:OutputMessageFailed(Name, Target, Spell, ID, OutputType, FailType)
 	local OutputMessage = nil;
 
-	OutputMessage = "lc1"..Name..L["'s"].."lr1 "..L["taunt"];
+	OutputMessage = Env.Left.One..Name..L["'s"]..Env.Right.One.." "..L["taunt"];
 	if (WhoTaunted.db.profile.DisplayAbility == true) then
 		OutputMessage = OutputMessage.." "..Spell;
 	end
-	OutputMessage = OutputMessage.." "..L["against"].." "..Target.." lc2"..string.upper(L["Failed:"].." "..FailType).."lr2!";
+	OutputMessage = OutputMessage.." "..L["against"].." "..Target.." "..Env.Left.Two..string.upper(L["Failed:"].." "..FailType)..Env.Right.Two.."!";
 
 	if (OutputType == WhoTaunted.OutputTypes.Self) then
-		OutputMessage = OutputMessage:gsub("lc1", "|c"..WhoTaunted:GetClassColor(Name)):gsub("lr1", "|r"):gsub("lc2", "|c00FF0000"):gsub("lr2", "|r");
+		OutputMessage = OutputMessage:gsub(Env.Left.One, Env.Left.Base..WhoTaunted:GetClassColor(Name)):gsub(Env.Right.One, Env.Right.Base):gsub(Env.Left.Two, "|c00FF0000"):gsub(Env.Right.Two, Env.Right.Base);
 	else
-		OutputMessage = OutputMessage:gsub("lc1", ""):gsub("lr1", ""):gsub("lc2", ""):gsub("lr2", "");
+		OutputMessage = OutputMessage:gsub(Env.Left.One, ""):gsub(Env.Right.One, ""):gsub(Env.Left.Two, ""):gsub(Env.Right.Two, "");
 	end
 
 	return OutputMessage;
