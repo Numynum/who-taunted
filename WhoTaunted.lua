@@ -5,6 +5,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("WhoTaunted");
 local PlayerName, PlayerRealm = UnitName("player");
 local BgDisable = false;
 local DisableInPvPZone = false;
+local version, build, date, tocVersion = GetBuildInfo();
 local TauntData = {};
 local RecentTaunts = {};
 local TauntTypes = {
@@ -16,6 +17,7 @@ local Env = {
 	DeathGrip = 49576,
 	Provoke = 115546,
 	BlackOxStatue = 61146,
+	RighteousDefense = 31789,
 };
 
 function WhoTaunted:OnInitialize()
@@ -39,6 +41,12 @@ function WhoTaunted:OnEnable()
 		WhoTaunted.db.profile.AnounceTauntsOutput = WhoTaunted.OutputTypes.Self;
 		WhoTaunted.db.profile.AnounceAOETauntsOutput = WhoTaunted.OutputTypes.Self;
 		WhoTaunted.db.profile.AnounceFailsOutput = WhoTaunted.OutputTypes.Self;
+	end
+
+	--Disable Righteous Defense options if the client is Classic Era or Mists
+	if (tocVersion) and ((tocVersion >= 50000) or (tocVersion < 20000)) then
+		WhoTaunted.db.profile.RighteousDefenseTarget = false;
+		WhoTaunted.options.args.General.args.RighteousDefenseTarget.hidden = true;
 	end
 end
 
@@ -248,6 +256,10 @@ function WhoTaunted:OutputMessageAOE(Name, Target, Spell, ID, OutputType)
 			--Monk AOE Taunt for casting Provoke (115546) on Black Ox Statue (61146)
 			OutputMessage = OutputMessage.." "..L["using"].." "..Spell.." "..L["on Black Ox Statue"]..".";
 		else
+			--Show the Righteous Defense Target if the option is toggled (and supported in the WoW Client)
+			if (Target) and (ID == Env.RighteousDefense) and (WhoTaunted.db.profile.RighteousDefenseTarget == true) then
+				OutputMessage = OutputMessage.." "..L["off of"].." lc2"..Target.."lr2";
+			end
 			OutputMessage = OutputMessage.." "..L["using"].." "..Spell..".";
 		end
 	else

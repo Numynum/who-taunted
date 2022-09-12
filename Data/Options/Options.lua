@@ -105,7 +105,17 @@ WhoTaunted.options = {
                         WhoTaunted.db.profile.DisplayAbility = v;
                     end,
                     order = 50
-                }
+                },
+                RighteousDefenseTarget = {
+					type = "toggle",
+                    hidden = false,
+					name = L["Show"].." "..GetSpellInfo(31789).." "..L["Target"],
+					desc = L["Show"].." "..LOCALIZED_CLASS_NAMES_MALE["PALADIN"].."'s".." "..GetSpellInfo(31789).." "..string.lower(L["Target"])..".",
+					width = "full",
+					get = function(info) return WhoTaunted.db.profile.RighteousDefenseTarget; end,
+					set = function(info, v) WhoTaunted.db.profile.RighteousDefenseTarget = v; end,
+					order = 60
+				}
             }
         },
         Announcements = {

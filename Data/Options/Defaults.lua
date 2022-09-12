@@ -6,6 +6,7 @@ WhoTaunted.defaults = {
 		DisableInBG = true,
 		DisableInPvPZone = true,
 		ChatWindow = "",
+		RighteousDefenseTarget = true,
 		HideOwnTaunts = false,
 		HideOwnFailedTaunts = false,
 		Prefix = true,
