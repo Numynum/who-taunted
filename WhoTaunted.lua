@@ -41,9 +41,17 @@ function WhoTaunted:OnInitialize()
 	WhoTaunted:RegisterChatCommand("wtaunted", "ChatCommand")
 	WhoTaunted:RegisterChatCommand("wtaunt", "ChatCommand")
 
-	WhoTaunted.db = LibStub("AceDB-3.0"):New("WhoTauntedDB", WhoTaunted.defaults, "profile");
-	LibStub("AceConfig-3.0"):RegisterOptionsTable("WhoTaunted", WhoTaunted.options)
+	WhoTaunted.db = LibStub("AceDB-3.0"):New("WhoTauntedDB", WhoTaunted.defaults, "Default");
+	LibStub("AceConfig-3.0"):RegisterOptionsTable("WhoTaunted", WhoTaunted.options);
 	AceConfig:AddToBlizOptions("WhoTaunted", "Who Taunted?");
+	WhoTaunted.options.args.Profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(WhoTaunted.db);
+
+	--Convert the old Options "profile" to the new "Default"
+	if (WhoTaunted.db:GetCurrentProfile() == "profile") then
+		WhoTaunted.db:SetProfile("Default");
+		WhoTaunted.db:CopyProfile("profile", true);
+		WhoTaunted.db:DeleteProfile("profile", true);
+	end
 end
 
 function WhoTaunted:OnEnable()
@@ -92,58 +100,9 @@ function WhoTaunted:ZoneChangedOnEvent(event, ...)
 	end
 end
 
-function WhoTaunted:ChatCommand()
-	InterfaceOptionsFrame_OpenToCategory("Who Taunted?");
-end
-
-function WhoTaunted:CheckOptions()
-	--Disable Righteous Defense options if the client is Classic Era or Mists
-	if (tocVersion) and ((tocVersion >= 50000) or (tocVersion < 20000)) then
-		WhoTaunted.db.profile.RighteousDefenseTarget = false;
-		WhoTaunted.options.args.General.args.RighteousDefenseTarget.hidden = true;
-	end
-
-	if (WhoTaunted.db.profile.AnounceTauntsOutput ~= WhoTaunted.OutputTypes.Self) or (WhoTaunted.db.profile.AnounceAOETauntsOutput ~= WhoTaunted.OutputTypes.Self) or (WhoTaunted.db.profile.AnounceFailsOutput ~= WhoTaunted.OutputTypes.Self) then
-		WhoTaunted.options.args.Announcements.args.Prefix.disabled = false;
-	else
-		WhoTaunted.options.args.Announcements.args.Prefix.disabled = true;
-	end
-
-	if (WhoTaunted.db.profile.AnounceTauntsOutput == WhoTaunted.OutputTypes.Self) or (WhoTaunted.db.profile.AnounceAOETauntsOutput == WhoTaunted.OutputTypes.Self) or (WhoTaunted.db.profile.AnounceFailsOutput == WhoTaunted.OutputTypes.Self) then
-		WhoTaunted.options.args.Announcements.args.ChatWindow.disabled = false;
-	else
-		WhoTaunted.options.args.Announcements.args.ChatWindow.disabled = true;
-	end
-
-	if (WhoTaunted.db.profile.AnounceTaunts == true) then
-		WhoTaunted.options.args.Announcements.args.AnounceTauntsOutput.disabled = false;
-	else
-		WhoTaunted.options.args.Announcements.args.AnounceTauntsOutput.disabled = true;
-	end
-
-	if (WhoTaunted.db.profile.AnounceAOETaunts == true) then
-		WhoTaunted.options.args.Announcements.args.AnounceAOETauntsOutput.disabled = false;
-	else
-		WhoTaunted.options.args.Announcements.args.AnounceAOETauntsOutput.disabled = true;
-	end
-
-	if (WhoTaunted.db.profile.AnounceFails == true) then
-		WhoTaunted.options.args.Announcements.args.AnounceFailsOutput.disabled = false;
-	else
-		WhoTaunted.options.args.Announcements.args.AnounceFailsOutput.disabled = true;
-	end
-
-	if (WhoTaunted.db.profile.Disabled == true) then
-		WhoTaunted.options.args.General.disabled = true;
-		WhoTaunted.options.args.Announcements.disabled = true;
-		WhoTaunted.options.args.Announcements.args.ChatWindow.disabled = true;
-		WhoTaunted.options.args.Announcements.args.Prefix.disabled = true;
-		WhoTaunted.options.args.Announcements.args.AnounceTauntsOutput.disabled = true;
-		WhoTaunted.options.args.Announcements.args.AnounceAOETauntsOutput.disabled = true;
-		WhoTaunted.options.args.Announcements.args.AnounceFailsOutput.disabled = true;
-	else
-		WhoTaunted.options.args.General.disabled = false;
-		WhoTaunted.options.args.Announcements.disabled = false;
+function WhoTaunted:ChatCommand(input)
+	if (not input) or (input:trim() == "") then
+			InterfaceOptionsFrame_OpenToCategory("Who Taunted?");
 	end
 end
 

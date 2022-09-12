@@ -10,7 +10,7 @@ WhoTaunted.OutputTypes = {
 };
 
 WhoTaunted.options = {
-    name = "Who Taunted?",
+    name = "Who Taunted? v"..GetAddOnMetadata("WhoTaunted", "Version"),
     type = 'group',
     args = {
         Intro = {
@@ -272,6 +272,100 @@ WhoTaunted.options = {
 					order = 90
 				}
             }
+        },
+        Profiles = {},
+        FAQ = {
+            name = L["FAQ"],
+            desc = L["Frequently Asked Questions"],
+            type = "group",
+            order = -1,
+            args = {
+                line1 = {
+                    type = "description",
+                    name = "|cffffd200"..L["Where can I report issues?"].."|r",
+                    order = 10,
+                },
+                line2 = {
+                    type = "description",
+                    name = L["Issues can be reported on the Who Taunted? Github page"].." - |cffffff78https://github.com/Davie3/who-taunted/issues|r",
+                    order = 20,
+                },
+                line3 = {
+                    type = "description",
+                    name = "\n".."|cffffd200"..L["How can I help with Localization?"].."|r",
+                    order = 30,
+                },
+                line4 = {
+                    type = "description",
+                    name = L["Help localize on Curseforge!"].." - |cffffff78https://www.curseforge.com/wow/addons/who-taunted/localization|r",
+                    order = 40,
+                },
+                line5 = {
+                    type = "description",
+                    name = "\n".."|cffffd200"..L["Who wrote this Addon?"].."|r",
+                    order = 50,
+                },
+                line6 = {
+                    type = "description",
+                    name = L["This Addon was written and is still maintained by Davie3. Follow me on Twitch!"].." - |cffffff78https://www.twitch.tv/davie3|r",
+                    order = 60,
+                },
+            },
         }
     }
 }
+
+function WhoTaunted:CheckOptions()
+	--Disable Righteous Defense options if the client is Classic Era or Mists
+	if (tocVersion) and ((tocVersion >= 50000) or (tocVersion < 20000)) then
+		WhoTaunted.db.profile.RighteousDefenseTarget = false;
+		WhoTaunted.options.args.General.args.RighteousDefenseTarget.hidden = true;
+	end
+
+	if (WhoTaunted.db.profile.AnounceTauntsOutput ~= WhoTaunted.OutputTypes.Self) or (WhoTaunted.db.profile.AnounceAOETauntsOutput ~= WhoTaunted.OutputTypes.Self) or (WhoTaunted.db.profile.AnounceFailsOutput ~= WhoTaunted.OutputTypes.Self) then
+		WhoTaunted.options.args.Announcements.args.Prefix.disabled = false;
+	else
+		WhoTaunted.options.args.Announcements.args.Prefix.disabled = true;
+	end
+
+	if (WhoTaunted.db.profile.AnounceTauntsOutput == WhoTaunted.OutputTypes.Self) or (WhoTaunted.db.profile.AnounceAOETauntsOutput == WhoTaunted.OutputTypes.Self) or (WhoTaunted.db.profile.AnounceFailsOutput == WhoTaunted.OutputTypes.Self) then
+		WhoTaunted.options.args.Announcements.args.ChatWindow.disabled = false;
+	else
+		WhoTaunted.options.args.Announcements.args.ChatWindow.disabled = true;
+	end
+
+	if (WhoTaunted.db.profile.AnounceTaunts == true) then
+		WhoTaunted.options.args.Announcements.args.AnounceTauntsOutput.disabled = false;
+	else
+		WhoTaunted.options.args.Announcements.args.AnounceTauntsOutput.disabled = true;
+	end
+
+	if (WhoTaunted.db.profile.AnounceAOETaunts == true) then
+		WhoTaunted.options.args.Announcements.args.AnounceAOETauntsOutput.disabled = false;
+	else
+		WhoTaunted.options.args.Announcements.args.AnounceAOETauntsOutput.disabled = true;
+	end
+
+	if (WhoTaunted.db.profile.AnounceFails == true) then
+		WhoTaunted.options.args.Announcements.args.AnounceFailsOutput.disabled = false;
+	else
+		WhoTaunted.options.args.Announcements.args.AnounceFailsOutput.disabled = true;
+	end
+
+	if (WhoTaunted.db.profile.Disabled == true) then
+		WhoTaunted.options.args.General.disabled = true;
+		WhoTaunted.options.args.Announcements.disabled = true;
+		WhoTaunted.options.args.Profiles.disabled = true;
+		WhoTaunted.options.args.FAQ.disabled = true;
+		WhoTaunted.options.args.Announcements.args.ChatWindow.disabled = true;
+		WhoTaunted.options.args.Announcements.args.Prefix.disabled = true;
+		WhoTaunted.options.args.Announcements.args.AnounceTauntsOutput.disabled = true;
+		WhoTaunted.options.args.Announcements.args.AnounceAOETauntsOutput.disabled = true;
+		WhoTaunted.options.args.Announcements.args.AnounceFailsOutput.disabled = true;
+	else
+		WhoTaunted.options.args.General.disabled = false;
+		WhoTaunted.options.args.Announcements.disabled = false;
+		WhoTaunted.options.args.Profiles.disabled = false;
+		WhoTaunted.options.args.FAQ.disabled = false;
+	end
+end
