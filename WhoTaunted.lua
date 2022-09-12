@@ -217,23 +217,26 @@ end
 
 function WhoTaunted:IsTaunt(SpellID)
 	local IsTaunt, TauntType = false, "";
-		for k, v in pairs(WhoTaunted.TauntsList.SingleTarget) do
-			if (GetSpellInfo(v) == GetSpellInfo(SpellID)) then
-				IsTaunt, TauntType = true, TauntTypes.Normal;
-				break;
-			end
+
+	for k, v in pairs(WhoTaunted.TauntsList.SingleTarget) do
+		if (GetSpellInfo(v) == GetSpellInfo(SpellID)) then
+			IsTaunt, TauntType = true, TauntTypes.Normal;
+			break;
 		end
-		for k, v in pairs(WhoTaunted.TauntsList.AOE) do
-			if (GetSpellInfo(v) == GetSpellInfo(SpellID)) then
-				IsTaunt, TauntType = true, TauntTypes.AOE;
-				break;
-			end
+	end
+	for k, v in pairs(WhoTaunted.TauntsList.AOE) do
+		if (GetSpellInfo(v) == GetSpellInfo(SpellID)) then
+			IsTaunt, TauntType = true, TauntTypes.AOE;
+			break;
 		end
+	end
+
 	return IsTaunt, TauntType;
 end
 
 function WhoTaunted:IsPvPZone(MapID)
 	local IsPvPZone = false;
+
 	if (MapID) and (type(MapID) == "number") then
 		for k, v in pairs(WhoTaunted.PvPZoneIDs) do
 			if (MapID == v) then
@@ -242,6 +245,7 @@ function WhoTaunted:IsPvPZone(MapID)
 			end
 		end
 	end
+
 	return IsPvPZone;
 end
 
@@ -377,6 +381,7 @@ end
 
 function WhoTaunted:GetOutputType(TauntType)
 	local OutputType = WhoTaunted.OutputTypes.Self;
+
 	if (TauntType == TauntTypes.Normal) then
 		OutputType = WhoTaunted.db.profile.AnounceTauntsOutput;
 	elseif (TauntType == TauntTypes.AOE) then
@@ -384,11 +389,13 @@ function WhoTaunted:GetOutputType(TauntType)
 	elseif (TauntType == TauntTypes.Failed) then
 		OutputType = WhoTaunted.db.profile.AnounceFailsOutput;
 	end
+
 	return OutputType;
 end
 
 function WhoTaunted:IsChatChannel(ChannelName)
 	local IsChatChannel = false;
+
 	for i = 1, NUM_CHAT_WINDOWS, 1 do
 		for k, v in pairs({ GetChatWindowChannels(i) }) do
 			if (string.lower(tostring(v)) == string.lower(tostring(ChannelName))) then
@@ -400,6 +407,7 @@ function WhoTaunted:IsChatChannel(ChannelName)
 			break;
 		end
 	end
+
 	return IsChatChannel;
 end
 
@@ -409,6 +417,7 @@ end
 
 function WhoTaunted:GetChatWindows()
 	local ChatWindows = {};
+
 	for i = 1, NUM_CHAT_WINDOWS, 1 do
 		local name, fontSize, r, g, b, alpha, shown, locked, docked, uninteractable = GetChatWindowInfo(i);
 		if (name) and (tostring(name) ~= COMBAT_LOG) and (tostring(name) ~= VOICE) and (name:trim() ~= "") then
@@ -419,11 +428,13 @@ function WhoTaunted:GetChatWindows()
 			end
 		end
 	end
+
 	return ChatWindows;
 end
 
 function WhoTaunted:IsChatWindow(ChatWindow)
 	local IsChatWindow = false;
+
 	for i = 1, NUM_CHAT_WINDOWS, 1 do
 		local name, fontSize, r, g, b, alpha, shown, locked, docked, uninteractable = GetChatWindowInfo(i);
 		if (name) and (name:trim() ~= "") and (tostring(name) == tostring(ChatWindow)) then
@@ -431,6 +442,7 @@ function WhoTaunted:IsChatWindow(ChatWindow)
 			break;
 		end
 	end
+
 	return IsChatWindow;
 end
 
