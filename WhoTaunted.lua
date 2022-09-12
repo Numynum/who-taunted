@@ -93,12 +93,34 @@ function WhoTaunted:CheckOptions()
 		WhoTaunted.options.args.General.args.RighteousDefenseTarget.hidden = true;
 	end
 
-	if (WhoTaunted.db.profile.AnounceTauntsOutput ~= WhoTaunted.OutputTypes.Self) then
-		WhoTaunted.options.args.Announcements.args.ChatWindow.disabled = true;
+	if (WhoTaunted.db.profile.AnounceTauntsOutput ~= WhoTaunted.OutputTypes.Self) or (WhoTaunted.db.profile.AnounceAOETauntsOutput ~= WhoTaunted.OutputTypes.Self) or (WhoTaunted.db.profile.AnounceFailsOutput ~= WhoTaunted.OutputTypes.Self) then
 		WhoTaunted.options.args.Announcements.args.Prefix.disabled = false;
 	else
-		WhoTaunted.options.args.Announcements.args.ChatWindow.disabled = false;
 		WhoTaunted.options.args.Announcements.args.Prefix.disabled = true;
+	end
+
+	if (WhoTaunted.db.profile.AnounceTauntsOutput == WhoTaunted.OutputTypes.Self) or (WhoTaunted.db.profile.AnounceAOETauntsOutput == WhoTaunted.OutputTypes.Self) or (WhoTaunted.db.profile.AnounceFailsOutput == WhoTaunted.OutputTypes.Self) then
+		WhoTaunted.options.args.Announcements.args.ChatWindow.disabled = false;
+	else
+		WhoTaunted.options.args.Announcements.args.ChatWindow.disabled = true;
+	end
+
+	if (WhoTaunted.db.profile.AnounceTaunts == true) then
+		WhoTaunted.options.args.Announcements.args.AnounceTauntsOutput.disabled = false;
+	else
+		WhoTaunted.options.args.Announcements.args.AnounceTauntsOutput.disabled = true;
+	end
+
+	if (WhoTaunted.db.profile.AnounceAOETaunts == true) then
+		WhoTaunted.options.args.Announcements.args.AnounceAOETauntsOutput.disabled = false;
+	else
+		WhoTaunted.options.args.Announcements.args.AnounceAOETauntsOutput.disabled = true;
+	end
+
+	if (WhoTaunted.db.profile.AnounceFails == true) then
+		WhoTaunted.options.args.Announcements.args.AnounceFailsOutput.disabled = false;
+	else
+		WhoTaunted.options.args.Announcements.args.AnounceFailsOutput.disabled = true;
 	end
 
 	if (WhoTaunted.db.profile.Disabled == true) then
@@ -106,6 +128,9 @@ function WhoTaunted:CheckOptions()
 		WhoTaunted.options.args.Announcements.disabled = true;
 		WhoTaunted.options.args.Announcements.args.ChatWindow.disabled = true;
 		WhoTaunted.options.args.Announcements.args.Prefix.disabled = true;
+		WhoTaunted.options.args.Announcements.args.AnounceTauntsOutput.disabled = true;
+		WhoTaunted.options.args.Announcements.args.AnounceAOETauntsOutput.disabled = true;
+		WhoTaunted.options.args.Announcements.args.AnounceFailsOutput.disabled = true;
 	else
 		WhoTaunted.options.args.General.disabled = false;
 		WhoTaunted.options.args.Announcements.disabled = false;

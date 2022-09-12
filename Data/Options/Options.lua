@@ -36,10 +36,15 @@ WhoTaunted.options = {
         General = {
             name = L["General"],
             type = "group",
-            guiInline = true,
+            guiInline = false,
             disabled = false,
             order = 30,
             args = {
+                PvpHeader = {
+                    order = 10,
+                    type = "header",
+                    name = PVP,
+                },
                 DisableInBG = {
                     type = "toggle",
                     name = L["Disable Who Taunted? in Battlegrounds"],
@@ -52,7 +57,7 @@ WhoTaunted.options = {
                         WhoTaunted.db.profile.DisableInBG = v;
                         WhoTaunted:EnteringWorldOnEvent();
                     end,
-                    order = 10
+                    order = 20
                 },
                 DisableInPvPZone = {
                     type = "toggle",
@@ -66,7 +71,12 @@ WhoTaunted.options = {
                         WhoTaunted.db.profile.DisableInPvPZone = v;
                         WhoTaunted:ZoneChangedOnEvent();
                     end,
-                    order = 20
+                    order = 30
+                },
+                SelfHeader = {
+                    order = 40,
+                    type = "header",
+                    name = L["Self"],
                 },
                 HideOwnTaunts = {
                     type = "toggle",
@@ -79,7 +89,7 @@ WhoTaunted.options = {
                     set = function(info, v)
                         WhoTaunted.db.profile.HideOwnTaunts = v;
                     end,
-                    order = 30
+                    order = 50
                 },
                 HideOwnFailedTaunts = {
                     type = "toggle",
@@ -92,7 +102,12 @@ WhoTaunted.options = {
                     set = function(info, v)
                         WhoTaunted.db.profile.HideOwnFailedTaunts = v;
                     end,
-                    order = 40
+                    order = 60
+                },
+                AbilityHeader = {
+                    order = 70,
+                    type = "header",
+                    name = COMBATLOG_HIGHLIGHT_ABILITY,
                 },
                 DisplayAbility = {
                     type = "toggle",
@@ -105,7 +120,7 @@ WhoTaunted.options = {
                     set = function(info, v)
                         WhoTaunted.db.profile.DisplayAbility = v;
                     end,
-                    order = 50
+                    order = 80
                 },
                 RighteousDefenseTarget = {
 					type = "toggle",
@@ -115,20 +130,70 @@ WhoTaunted.options = {
 					width = "full",
 					get = function(info) return WhoTaunted.db.profile.RighteousDefenseTarget; end,
 					set = function(info, v) WhoTaunted.db.profile.RighteousDefenseTarget = v; end,
-					order = 60
+					order = 90
 				}
             }
         },
         Announcements = {
             name = L["Announcements"],
             type = "group",
-            guiInline = true,
+            guiInline = false,
             disabled = false,
             order = 40,
             args = {
+                ChatWindow = {
+                    type = "select",
+                    values = WhoTaunted:GetChatWindows(),
+                    disabled = false,
+                    name = L["Chat Window"],
+                    desc = L["The chat window taunts will be announced in when the output is set to"].." "..WhoTaunted.OutputTypes.Self..".",
+                    width = "100",
+                    get = function(info)
+                        return WhoTaunted.db.profile.ChatWindow;
+                    end,
+                    set = function(info, v)
+                        WhoTaunted.db.profile.ChatWindow = v;
+                    end,
+                    order = 10
+                },
+                Prefix = {
+					type = "toggle",
+                    disabled = false,
+					name = L["Include Prefix"],
+					desc = L["Include the"].." '"..L["<WhoTaunted>"].."' "..L["prefix when a message's output is"].." "..WhoTaunted.OutputTypes.Party..", "..WhoTaunted.OutputTypes.Raid..", "..L["etc"]..".",
+					width = "full",
+					get = function(info)
+                        return WhoTaunted.db.profile.Prefix;
+                    end,
+					set = function(info, v)
+                        WhoTaunted.db.profile.Prefix = v;
+                    end,
+					order = 20
+				},
+                AnnouncementsHeader = {
+                    order = 30,
+                    type = "header",
+                    name = L["Announcements"],
+                },
+                AnounceTaunts = {
+                    type = "toggle",
+                    name = L["Anounce Taunts"],
+                    desc = L["Anounce taunts."],
+                    width = "full",
+                    get = function(info)
+                        WhoTaunted:CheckOptions();
+                        return WhoTaunted.db.profile.AnounceTaunts;
+                    end,
+                    set = function(info, v)
+                        WhoTaunted.db.profile.AnounceTaunts = v;
+                        WhoTaunted:CheckOptions();
+                    end,
+                    order = 40
+                },
                 AnounceTauntsOutput = {
 					type = "select",
 					values = WhoTaunted.OutputTypes,
+                    disabled = false,
 					name = L["Anounce Taunts Output:"],
 					desc = L["Where taunts will be announced."],
 					width = "100",
@@ -140,72 +205,72 @@ WhoTaunted.options = {
                         WhoTaunted.db.profile.AnounceTauntsOutput = v;
                         WhoTaunted:CheckOptions();
                     end,
-					order = 10
+					order = 50
 				},
-                AnounceTaunts = {
-                    type = "toggle",
-                    name = L["Anounce Taunts"],
-                    desc = L["Anounce taunts."],
-                    width = "full",
-                    get = function(info)
-                        return WhoTaunted.db.profile.AnounceTaunts;
-                    end,
-                    set = function(info, v)
-                        WhoTaunted.db.profile.AnounceTaunts = v;
-                    end,
-                    order = 20
-                },
                 AnounceAOETaunts = {
                     type = "toggle",
                     name = L["Anounce AOE Taunts"],
                     desc = L["Anounce AOE Taunts."],
                     width = "full",
                     get = function(info)
+                        WhoTaunted:CheckOptions();
                         return WhoTaunted.db.profile.AnounceAOETaunts;
                     end,
                     set = function(info, v)
                         WhoTaunted.db.profile.AnounceAOETaunts = v;
+                        WhoTaunted:CheckOptions();
                     end,
-                    order = 30
+                    order = 60
                 },
+                AnounceAOETauntsOutput = {
+					type = "select",
+					values = WhoTaunted.OutputTypes,
+                    disabled = false,
+					name = L["Anounce AOE Taunts Output:"],
+					desc = L["Where AOE Taunts will be announced."],
+					width = "100",
+					get = function(info)
+                        WhoTaunted:CheckOptions();
+                        return WhoTaunted.db.profile.AnounceAOETauntsOutput;
+                    end,
+					set = function(info, v)
+                        WhoTaunted.db.profile.AnounceAOETauntsOutput = v;
+                        WhoTaunted:CheckOptions();
+                    end,
+					order = 70
+				},
                 AnounceFails = {
                     type = "toggle",
                     name = L["Anounce Fails"],
                     desc = L["Anounce taunts that fail."],
                     width = "full",
                     get = function(info)
+                        WhoTaunted:CheckOptions();
                         return WhoTaunted.db.profile.AnounceFails;
                     end,
                     set = function(info, v)
                         WhoTaunted.db.profile.AnounceFails = v;
+                        WhoTaunted:CheckOptions();
                     end,
-                    order = 40
+                    order = 80
                 },
-                Prefix = {
-					type = "toggle",
+                AnounceFailsOutput = {
+					type = "select",
+					values = WhoTaunted.OutputTypes,
                     disabled = false,
-					name = L["Include Prefix"],
-					desc = L["Include the"].." '"..L["<WhoTaunted>"].."' "..L["prefix when a message's output is"].." "..WhoTaunted.OutputTypes.Party..", "..WhoTaunted.OutputTypes.Raid..", "..L["etc"]..".",
-					width = "full",
-					get = function(info) return WhoTaunted.db.profile.Prefix; end,
-					set = function(info, v) WhoTaunted.db.profile.Prefix = v; end,
-					order = 50
-				},
-                ChatWindow = {
-                    type = "select",
-                    values = WhoTaunted:GetChatWindows(),
-                    disabled = false,
-                    name = L["Chat Window"],
-					desc = L["The chat window taunts will be announced in when the output is set to"].." "..WhoTaunted.OutputTypes.Self..".",
-                    width = "100",
-                    get = function(info)
-                        return WhoTaunted.db.profile.ChatWindow;
+					name = L["Anounce Fails Output:"],
+					desc = L["Where the taunt fails will be announced."],
+					width = "100",
+					get = function(info)
+                        WhoTaunted:CheckOptions();
+                        return WhoTaunted.db.profile.AnounceFailsOutput;
                     end,
-                    set = function(info, v)
-                        WhoTaunted.db.profile.ChatWindow = v;
+					set = function(info, v)
+                        WhoTaunted.db.profile.AnounceFailsOutput = v;
+                        WhoTaunted:CheckOptions();
                     end,
-                    order = 60
-                }
+					order = 90
+				}
             }
         }
     }
