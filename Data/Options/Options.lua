@@ -14,7 +14,7 @@ WhoTaunted.OutputTypes = {
 };
 
 WhoTaunted.options = {
-    name = "Who Taunted? v"..GetAddOnMetadata("WhoTaunted", "Version"),
+    name = "Who Taunted? "..GetAddOnMetadata("WhoTaunted", "Version"),
     type = 'group',
     args = {
         Intro = {

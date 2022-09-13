@@ -53,7 +53,7 @@ function WhoTaunted:OnInitialize()
 		WhoTaunted.db:DeleteProfile("profile", true);
 	end
 
-	WhoTaunted:Print("|cffffff78v"..GetAddOnMetadata("WhoTaunted", "Version").."|r "..L["has loaded! Please report any issues on GitHub"].." - |cffffff78https://github.com/Davie3/who-taunted/issues|r");
+	WhoTaunted:Print("|cffffff78"..GetAddOnMetadata("WhoTaunted", "Version").."|r "..L["has loaded! Please report any issues on GitHub"].." - |cffffff78https://github.com/Davie3/who-taunted/issues|r");
 end
 
 function WhoTaunted:OnEnable()
