@@ -6,6 +6,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale("WhoTaunted", "enUS", true);
 if not L then return end
 
 L["<WhoTaunted>"] = true
+L["A new Who Taunted? version is available!"] = true
 L["against"] = true
 L["Announcements"] = true
 L["Anounce AOE Taunts"] = true

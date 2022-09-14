@@ -1,4 +1,4 @@
-﻿WhoTaunted = LibStub("AceAddon-3.0"):NewAddon("WhoTaunted", "AceEvent-3.0", "AceConsole-3.0", "AceTimer-3.0")
+﻿WhoTaunted = LibStub("AceAddon-3.0"):NewAddon("WhoTaunted", "AceEvent-3.0", "AceConsole-3.0", "AceTimer-3.0", "AceComm-3.0", "AceSerializer-3.0")
 local AceConfig = LibStub("AceConfigDialog-3.0");
 local L = LibStub("AceLocale-3.0"):GetLocale("WhoTaunted");
 
@@ -6,6 +6,8 @@ local PlayerName, PlayerRealm = UnitName("player");
 local BgDisable = false;
 local DisableInPvPZone = false;
 local version, build, date, tocVersion = GetBuildInfo();
+local WhoTauntedVersion = GetAddOnMetadata("WhoTaunted", "Version");
+local NewVersionAvaiable = false;
 local TauntData = {};
 local RecentTaunts = {};
 local TauntTypes = {
@@ -28,18 +30,25 @@ local Env = {
 		One  = "lr1",
 		Two  = "lr2",
 	},
+	Prefix = {
+		Version = "WhoTaunted_Versi",
+	},
 };
 
 function WhoTaunted:OnInitialize()
-	WhoTaunted:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorldOnEvent")
-	WhoTaunted:RegisterEvent("PLAYER_REGEN_ENABLED", "RegenEnabledOnEvent")
-	WhoTaunted:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ZoneChangedOnEvent")
-	WhoTaunted:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "CombatLog")
-	WhoTaunted:RegisterEvent("UPDATE_CHAT_WINDOWS", "UpdateChatWindowsOnEvent")
+	WhoTaunted:RegisterEvent("PLAYER_ENTERING_WORLD", "EnteringWorldOnEvent");
+	WhoTaunted:RegisterEvent("PLAYER_REGEN_ENABLED", "RegenEnabledOnEvent");
+	WhoTaunted:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ZoneChangedOnEvent");
+	WhoTaunted:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "CombatLog");
+	WhoTaunted:RegisterEvent("UPDATE_CHAT_WINDOWS", "UpdateChatWindowsOnEvent");
+	WhoTaunted:RegisterEvent("GUILD_ROSTER_UPDATE", "GuildRosterUpdate");
+	WhoTaunted:RegisterEvent("GROUP_ROSTER_UPDATE", "GroupRosterUpdate");
 
-	WhoTaunted:RegisterChatCommand("whotaunted", "ChatCommand")
-	WhoTaunted:RegisterChatCommand("wtaunted", "ChatCommand")
-	WhoTaunted:RegisterChatCommand("wtaunt", "ChatCommand")
+	WhoTaunted:RegisterChatCommand("whotaunted", "ChatCommand");
+	WhoTaunted:RegisterChatCommand("wtaunted", "ChatCommand");
+	WhoTaunted:RegisterChatCommand("wtaunt", "ChatCommand");
+
+	WhoTaunted:RegisterComm(Env.Prefix.Version);
 
 	WhoTaunted.db = LibStub("AceDB-3.0"):New("WhoTauntedDB", WhoTaunted.defaults, "Default");
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("WhoTaunted", WhoTaunted.options);
@@ -47,13 +56,14 @@ function WhoTaunted:OnInitialize()
 	AceConfig:AddToBlizOptions("WhoTaunted", "Who Taunted?");
 
 	--Convert the old Options "profile" to the new "Default"
-	if (WhoTaunted.db:GetCurrentProfile() == "profile") then
+	if (WhoTaunted.db:GetCurrentProfile() == "profile") and (WhoTaunted.db.profile.ConvertedProfiles == false) then
 		WhoTaunted.db:SetProfile("Default");
 		WhoTaunted.db:CopyProfile("profile", true);
 		WhoTaunted.db:DeleteProfile("profile", true);
+		WhoTaunted.db.profile.ConvertedProfiles = true;
 	end
 
-	WhoTaunted:Print("|cffffff78"..GetAddOnMetadata("WhoTaunted", "Version").."|r "..L["has loaded! Please report any issues on GitHub"].." - |cffffff78https://github.com/Davie3/who-taunted/issues|r");
+	WhoTaunted:Print("|cffffff78"..WhoTauntedVersion.."|r "..L["has loaded! Please report any issues on GitHub"].." - |cffffff78https://github.com/Davie3/who-taunted/issues|r");
 end
 
 function WhoTaunted:OnEnable()
@@ -100,6 +110,14 @@ function WhoTaunted:ZoneChangedOnEvent(event, ...)
 	else
 		DisableInPvPZone = false;
 	end
+end
+
+function WhoTaunted:GuildRosterUpdate(event, ...)
+	WhoTaunted:SendCommData();
+end
+
+function WhoTaunted:GroupRosterUpdate(event, ...)
+	WhoTaunted:SendCommData();
 end
 
 function WhoTaunted:ChatCommand(input)
@@ -456,4 +474,106 @@ function WhoTaunted:GetSpellName(ID)
 	end
 
 	return spellName;
+end
+
+function WhoTaunted:SendCommData()
+	local isInGuild = IsInGuild();
+	local isInParty = UnitInParty("player");
+	local isInRaid = false;
+
+	if (IsInRaid()) and (GetNumGroupMembers() >= 1) then
+		isInRaid = true;
+	end
+	if (isInParty) and (isInParty == true) and (GetNumSubgroupMembers() >= 1) then
+		isInParty = true;
+	else
+		isInParty = false;
+	end
+
+	if (isInGuild) or (isInParty) or (isInRaid) then
+		local CommData;
+		local UserID = tonumber(tostring(UnitGUID("player")):sub(12), 16);
+
+		CommData = {ID = UserID, WhoTauntedVersion = WhoTauntedVersion };
+		if (isInRaid == true) then
+			WhoTaunted:SendCommMessage(Env.Prefix.Version, WhoTaunted:Serialize(CommData), "RAID");
+		elseif (isInParty == true) then
+			WhoTaunted:SendCommMessage(Env.Prefix.Version, WhoTaunted:Serialize(CommData), "PARTY");
+		elseif (isInGuild == true) then
+			WhoTaunted:SendCommMessage(Env.Prefix.Version, WhoTaunted:Serialize(CommData), "GUILD");
+		end
+	end
+end
+
+function WhoTaunted:OnCommReceived(prefix, message, distribution, sender)
+	if (prefix == Env.Prefix.Version) and (NewVersionAvaiable == false) then
+		local success, VersionData = WhoTaunted:Deserialize(message);
+		if (success) and (VersionData) and (VersionData.WhoTauntedVersion) then
+			if (WhoTaunted:CompareVersions(WhoTauntedVersion, VersionData.WhoTauntedVersion) == true) then
+				NewVersionAvaiable = true;
+				WhoTaunted:ScheduleTimer(function(self, event, ...)
+					WhoTaunted:Print(L["A new Who Taunted? version is available!"]..": ".."|c00FF0000"..VersionData.WhoTauntedVersion.."|r - |cffffff78https://www.curseforge.com/wow/addons/who-taunted|r");
+				end, 10);
+			end
+		end
+	end
+end
+
+function WhoTaunted:CompareVersions(Version1, Version2)
+	Version1 = Version1:gsub("-alpha", ""):gsub("-beta", ""):gsub("v", ""):trim();
+	Version2 = Version2:gsub("-alpha", ""):gsub("-beta", ""):gsub("v", ""):trim();
+
+	local a, b, c = strsplit(".", Version1);
+	if (a) then
+		Version1 = a;
+		if (b) then
+			if (tonumber(b) < 10) then
+				Version1 = Version1.."0"..b;
+			else
+				Version1 = Version1..b;
+			end
+		else
+			Version1 = Version1.."00";
+		end
+		if (c) then
+			if (tonumber(c) < 10) then
+				Version1 = Version1.."0"..c;
+			else
+				Version1 = Version1..c;
+			end
+		else
+			Version1 = Version1.."00";
+		end
+	end
+
+	local x, y, z = strsplit(".", Version2);
+	if (x) then
+		Version2 = x;
+		if (y) then
+			if (tonumber(y) < 10) then
+				Version2 = Version2.."0"..y;
+			else
+				Version2 = Version2..y;
+			end
+		else
+			Version2 = Version2.."00";
+		end
+		if (z) then
+			if (tonumber(z) < 10) then
+				Version2 = Version2.."0"..z;
+			else
+				Version2 = Version2..z;
+			end
+		else
+			Version2 = Version2.."00";
+		end
+	end
+
+	local VersionIsGreater = false;
+
+	if ((tonumber(Version1)) and (tonumber(Version2))) and (tonumber(Version2) > tonumber(Version1)) then
+		VersionIsGreater = true;
+	end
+
+	return VersionIsGreater;
 end
