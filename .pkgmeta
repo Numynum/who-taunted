@@ -23,3 +23,4 @@ ignore:
     - LICENSE
     - .vscode
     - .gitignore
+    - .github
