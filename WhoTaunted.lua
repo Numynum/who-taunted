@@ -7,7 +7,7 @@ local BgDisable = false;
 local DisableInPvPZone = false;
 local version, build, date, tocVersion = GetBuildInfo();
 local WhoTauntedVersion = GetAddOnMetadata("WhoTaunted", "Version");
-local NewVersionAvaiable = false;
+local NewVersionAvailable = false;
 local TauntData = {};
 local RecentTaunts = {};
 local TauntTypes = {
@@ -506,11 +506,11 @@ function WhoTaunted:SendCommData()
 end
 
 function WhoTaunted:OnCommReceived(prefix, message, distribution, sender)
-	if (prefix == Env.Prefix.Version) and (NewVersionAvaiable == false) then
+	if (prefix == Env.Prefix.Version) and (NewVersionAvailable == false) then
 		local success, VersionData = WhoTaunted:Deserialize(message);
 		if (success) and (VersionData) and (VersionData.WhoTauntedVersion) then
 			if (WhoTaunted:CompareVersions(WhoTauntedVersion, VersionData.WhoTauntedVersion) == true) then
-				NewVersionAvaiable = true;
+				NewVersionAvailable = true;
 				WhoTaunted:ScheduleTimer(function(self, event, ...)
 					WhoTaunted:Print(L["A new Who Taunted? version is available!"]..": ".."|c00FF0000"..VersionData.WhoTauntedVersion.."|r - |cffffff78https://www.curseforge.com/wow/addons/who-taunted|r");
 				end, 10);
