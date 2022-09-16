@@ -146,7 +146,7 @@ function WhoTaunted:DisplayTaunt(Event, Name, ID, TargetGUID, Target, FailType, 
 				OutputType = WhoTaunted:GetOutputType(TauntType);
 				local Spell = GetSpellLink(ID);
 				if (not Spell) then
-					Spell = GetSpellInfo(ID);
+					Spell = WhoTaunted:GetSpellName(ID);
 				end
 
 				if (TauntType == TauntTypes.Normal) then
@@ -162,7 +162,7 @@ function WhoTaunted:DisplayTaunt(Event, Name, ID, TargetGUID, Target, FailType, 
 				OutputType = WhoTaunted:GetOutputType(TauntType);
 				local Spell = GetSpellLink(ID);
 				if (not Spell) then
-					Spell = GetSpellInfo(ID);
+					Spell = WhoTaunted:GetSpellName(ID);
 				end
 
 				--Monk AOE Taunt for casting Provoke (115546) on Black Ox Statue (61146)
@@ -185,7 +185,7 @@ function WhoTaunted:DisplayTaunt(Event, Name, ID, TargetGUID, Target, FailType, 
 				OutputType = WhoTaunted:GetOutputType(TauntType);
 				local Spell = GetSpellLink(ID);
 				if (not Spell) then
-					Spell = GetSpellInfo(ID);
+					Spell = WhoTaunted:GetSpellName(ID);
 				end
 				OutputMessage = WhoTaunted:OutputMessageFailed(Name, Target, Spell, ID, OutputType, FailType);
 			else
@@ -207,20 +207,24 @@ end
 function WhoTaunted:IsTaunt(SpellID)
 	local IsTaunt, TauntType = false, "";
 
-	for k, v in pairs(WhoTaunted.TauntsList.SingleTarget) do
-		local spellTauntList = GetSpellInfo(v);
-		local spell = GetSpellInfo(SpellID);
-		if (spellTauntList) and (spell) and (spellTauntList == spell) then
-			IsTaunt, TauntType = true, TauntTypes.Normal;
-			break;
+	if (IsTaunt == false) then
+		for k, v in pairs(WhoTaunted.TauntsList.SingleTarget) do
+			local spellTauntList = GetSpellInfo(v);
+			local spell = GetSpellInfo(SpellID);
+			if (spellTauntList) and (spell) and (spellTauntList == spell) then
+				IsTaunt, TauntType = true, TauntTypes.Normal;
+				break;
+			end
 		end
 	end
-	for k, v in pairs(WhoTaunted.TauntsList.AOE) do
-		local spellTauntList = GetSpellInfo(v);
-		local spell = GetSpellInfo(SpellID);
-		if (spellTauntList) and (spell) and (spellTauntList == spell) then
-			IsTaunt, TauntType = true, TauntTypes.AOE;
-			break;
+	if (IsTaunt == false) then
+		for k, v in pairs(WhoTaunted.TauntsList.AOE) do
+			local spellTauntList = GetSpellInfo(v);
+			local spell = GetSpellInfo(SpellID);
+			if (spellTauntList) and (spell) and (spellTauntList == spell) then
+				IsTaunt, TauntType = true, TauntTypes.AOE;
+				break;
+			end
 		end
 	end
 
