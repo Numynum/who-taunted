@@ -20,6 +20,7 @@ externals:
 
 ignore:
     - README.md
+    - README-CF.md
     - LICENSE
     - .vscode
     - .gitignore
