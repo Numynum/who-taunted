@@ -3,6 +3,7 @@ local AceConfig = LibStub("AceConfigDialog-3.0");
 local L = LibStub("AceLocale-3.0"):GetLocale("WhoTaunted");
 
 local PlayerName, PlayerRealm = UnitName("player");
+local UserID = tonumber(tostring(UnitGUID("player")):sub(12), 16);
 local BgDisable = false;
 local DisableInPvPZone = false;
 local version, build, date, tocVersion = GetBuildInfo();
@@ -496,7 +497,6 @@ function WhoTaunted:SendCommData()
 
 	if (isInGuild) or (isInParty) or (isInRaid) then
 		local CommData;
-		local UserID = tonumber(tostring(UnitGUID("player")):sub(12), 16);
 
 		CommData = {ID = UserID, WhoTauntedVersion = WhoTauntedVersion };
 		if (isInRaid == true) then
@@ -512,7 +512,7 @@ end
 function WhoTaunted:OnCommReceived(prefix, message, distribution, sender)
 	if (prefix == Env.Prefix.Version) and (NewVersionAvailable == false) then
 		local success, VersionData = WhoTaunted:Deserialize(message);
-		if (success) and (VersionData) and (VersionData.WhoTauntedVersion) then
+		if (success) and (VersionData) and (VersionData.WhoTauntedVersion) and (VersionData.ID ~= UserID) then
 			if (WhoTaunted:CompareVersions(WhoTauntedVersion, VersionData.WhoTauntedVersion) == true) then
 				NewVersionAvailable = true;
 				WhoTaunted:ScheduleTimer(function(self, event, ...)
