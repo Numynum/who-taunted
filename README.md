@@ -41,7 +41,7 @@ Help localize on Curseforge! - http://wow.curseforge.com/addons/who-taunted/loca
 - Re-introducing options to change the Output of each Taunt Type.
 - [Various bug fixes and improvements](https://github.com/Davie3/who-taunted/releases/tag/v2.0).
 
-**v1.5**
+**[v1.5](https://github.com/Davie3/who-taunted/releases/tag/v1.5)**
 - 9.0.1/Shadowlands compatibility.
 - Removed Hunter's Distracting Shot.
 - Re-added Warrior's Challenging Shout under AOE taunts
@@ -124,6 +124,6 @@ Help localize on Curseforge! - http://wow.curseforge.com/addons/who-taunted/loca
 - Hide own taunts and failed taunts option added.
 - Paladin Righteous Defense target option added.
 - The ability to select the chat window for the self output has been added.
-- Hide the '<WhoTaunted>' prefix option added.
+- Hide the `<WhoTaunted>` prefix option added.
 - Toggle the display of the ability used to taunt option added.
 - Fixed bug with the disable in battlegrounds option.
