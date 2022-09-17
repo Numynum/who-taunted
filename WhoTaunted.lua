@@ -482,29 +482,33 @@ function WhoTaunted:GetSpellName(ID)
 end
 
 function WhoTaunted:SendCommData()
-	local isInGuild = IsInGuild();
-	local isInParty = UnitInParty("player");
-	local isInRaid = false;
+	local inCombat = InCombatLockdown();
 
-	if (IsInRaid()) and (GetNumGroupMembers() >= 1) then
-		isInRaid = true;
-	end
-	if (isInParty) and (isInParty == true) and (GetNumSubgroupMembers() >= 1) then
-		isInParty = true;
-	else
-		isInParty = false;
-	end
+	if (inCombat == false) then
+		local isInGuild = IsInGuild();
+		local isInParty = UnitInParty("player");
+		local isInRaid = IsInRaid();
 
-	if (isInGuild) or (isInParty) or (isInRaid) then
-		local CommData;
+		if (isInRaid) and (isInRaid == true) and (GetNumGroupMembers() > 1) then
+			isInRaid = true;
+		end
+		if (isInParty) and (isInParty == true) and (GetNumSubgroupMembers() > 1) then
+			isInParty = true;
+		else
+			isInParty = false;
+		end
 
-		CommData = {ID = UserID, WhoTauntedVersion = WhoTauntedVersion };
-		if (isInRaid == true) then
-			WhoTaunted:SendCommMessage(Env.Prefix.Version, WhoTaunted:Serialize(CommData), "RAID");
-		elseif (isInParty == true) then
-			WhoTaunted:SendCommMessage(Env.Prefix.Version, WhoTaunted:Serialize(CommData), "PARTY");
-		elseif (isInGuild == true) then
-			WhoTaunted:SendCommMessage(Env.Prefix.Version, WhoTaunted:Serialize(CommData), "GUILD");
+		if (isInGuild) or (isInParty) or (isInRaid) then
+			local CommData;
+
+			CommData = {ID = UserID, WhoTauntedVersion = WhoTauntedVersion };
+			if (isInRaid == true) then
+				WhoTaunted:SendCommMessage(Env.Prefix.Version, WhoTaunted:Serialize(CommData), "RAID");
+			elseif (isInParty == true) then
+				WhoTaunted:SendCommMessage(Env.Prefix.Version, WhoTaunted:Serialize(CommData), "PARTY");
+			elseif (isInGuild == true) then
+				WhoTaunted:SendCommMessage(Env.Prefix.Version, WhoTaunted:Serialize(CommData), "GUILD");
+			end
 		end
 	end
 end
