@@ -9,7 +9,6 @@ local DisableInPvPZone = false;
 local version, build, date, tocVersion = GetBuildInfo();
 local WhoTauntedVersion = GetAddOnMetadata("WhoTaunted", "Version");
 local NewVersionAvailable = false;
-local TauntData = {};
 local RecentTaunts = {};
 local TauntTypes = {
 	Normal = "Normal",
@@ -85,6 +84,7 @@ end
 function WhoTaunted:UpdateChatWindowsOnEvent(event, ...)
 	WhoTaunted:UpdateChatWindows();
 end
+
 function WhoTaunted:CombatLog(self, event, ...)
 	local timestamp, subEvent, hideCaster, srcGUID, srcName, srcFlags, srcFlags2, dstGUID, dstName, dstFlags, dstFlags2, spellID, spellName, spellSchool, extraSpellID, extraSpellName, extraSpellSchool, auraType = CombatLogGetCurrentEventInfo();
 	WhoTaunted:DisplayTaunt(subEvent, srcName, spellID, dstGUID, dstName, extraSpellID, GetServerTime());
