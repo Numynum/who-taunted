@@ -23,7 +23,7 @@ Help localize here on Curseforge! - http://wow.curseforge.com/addons/who-taunted
 Feel free to post any of these right here! Please post any serious problems or bugs on GitHub - https://github.com/Davie3/who-taunted/issues
 
 ## Recent Change Log
-# [v2.0](https://www.curseforge.com/wow/addons/who-taunted/files/3996610)
+# [v2.0](https://www.curseforge.com/wow/addons/who-taunted/files/3996658)
 - 9.2.7 Compatibility.
 - Wrath Classic 3.4.0 Support and Compatibility.
 - TBC Classic 2.5.4 Support and Compatibility (for good measure if it comes back).
