@@ -15,5 +15,5 @@
 Libs\load-embeds.xml
 Localization\load-locales.xml
 WhoTaunted.lua
-Data\load-db.xml
+Data\load-db-wrath.xml
 Data\load-options.xml
