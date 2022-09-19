@@ -1,5 +1,5 @@
 ## Author: @project-author@
-## Interface: 90207
+## Interface: 20504
 ## Notes: Tracks player taunts and displays who they taunted, what ability they used to taunt, and if it failed in some way.
 ## OptionalDeps: Ace3
 ## SavedVariables: WhoTauntedDB
@@ -15,5 +15,5 @@
 Libs\load-embeds.xml
 Localization\load-locales.xml
 WhoTaunted.lua
-Data\load-db.xml
+Data\load-db-tbc.xml
 Data\load-options.xml

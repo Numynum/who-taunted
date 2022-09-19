@@ -6,6 +6,7 @@ WhoTaunted.defaults = {
 		DisableInBG = true,
 		DisableInPvPZone = true,
 		ChatWindow = "",
+		RighteousDefenseTarget = true,
 		HideOwnTaunts = false,
 		HideOwnFailedTaunts = false,
 		Prefix = true,
@@ -16,5 +17,6 @@ WhoTaunted.defaults = {
 		AnounceAOETauntsOutput = WhoTaunted.OutputTypes.Self,
 		AnounceFails = true,
 		AnounceFailsOutput = WhoTaunted.OutputTypes.Self,
+		ConvertedProfiles = false,
 	},
 }
