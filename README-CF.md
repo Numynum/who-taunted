@@ -2,9 +2,9 @@
 Tracks player taunts and displays who they taunted, what ability they used to taunt, and if it failed in some way.
 
 ## Supported Taunt Versions
+Latest WoW versions now supported!
 
 ### Mainline and Classic
-
 - Shadowlands (9.2.7)
 - Wrath (3.4.0)
 - Vanilla (1.14.3)
@@ -22,8 +22,8 @@ Help localize here on Curseforge! - http://wow.curseforge.com/addons/who-taunted
 
 Feel free to post any of these right here! Please post any serious problems or bugs on GitHub - https://github.com/Davie3/who-taunted/issues
 
-## Change Log
-**[v2.0](https://www.curseforge.com/wow/addons/who-taunted/files/3996610)**
+## Recent Change Log
+# [v2.0](https://www.curseforge.com/wow/addons/who-taunted/files/3996610)
 - 9.2.7 Compatibility.
 - Wrath Classic 3.4.0 Support and Compatibility.
 - TBC Classic 2.5.4 Support and Compatibility (for good measure if it comes back).
@@ -35,7 +35,7 @@ Feel free to post any of these right here! Please post any serious problems or b
 - Re-introducing options to change the Output of each Taunt Type.
 - [Various bug fixes and improvements](https://github.com/Davie3/who-taunted/releases/tag/v2.0).
 
-**[v1.5](https://www.curseforge.com/wow/addons/who-taunted/files/3081194)**
+# [v1.5](https://www.curseforge.com/wow/addons/who-taunted/files/3081194)
 - 9.0.1/Shadowlands compatibility.
 - Removed Hunter's Distracting Shot.
 - Re-added Warrior's Challenging Shout under AOE taunts
