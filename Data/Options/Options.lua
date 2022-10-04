@@ -358,6 +358,18 @@ function WhoTaunted:CheckOptions()
 		WhoTaunted.options.args.Announcements.args.AnounceFailsOutput.disabled = true;
 	end
 
+    if (not tContains(WhoTaunted.OutputTypes, WhoTaunted.db.profile.AnounceTauntsOutput)) then
+        WhoTaunted.db.profile.AnounceTauntsOutput = WhoTaunted.OutputTypes.Self;
+    end
+
+    if (not tContains(WhoTaunted.OutputTypes, WhoTaunted.db.profile.AnounceAOETauntsOutput)) then
+        WhoTaunted.db.profile.AnounceAOETauntsOutput = WhoTaunted.OutputTypes.Self;
+    end
+
+    if (not tContains(WhoTaunted.OutputTypes, WhoTaunted.db.profile.AnounceFailsOutput)) then
+        WhoTaunted.db.profile.AnounceFailsOutput = WhoTaunted.OutputTypes.Self;
+    end
+
 	if (WhoTaunted.db.profile.Disabled == true) then
 		WhoTaunted.options.args.General.disabled = true;
 		WhoTaunted.options.args.Announcements.disabled = true;
