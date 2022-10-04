@@ -153,9 +153,11 @@ WhoTaunted.options = {
                     desc = L["The chat window taunts will be announced in when the output is set to"].." "..WhoTaunted.OutputTypes.Self..".",
                     width = "100",
                     get = function(info)
+                        WhoTaunted:UpdateChatWindows();
                         return WhoTaunted.db.profile.ChatWindow;
                     end,
                     set = function(info, v)
+                        WhoTaunted:UpdateChatWindows();
                         WhoTaunted.db.profile.ChatWindow = v;
                     end,
                     order = 10

@@ -41,8 +41,8 @@ function WhoTaunted:OnInitialize()
 	WhoTaunted:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ZoneChangedOnEvent");
 	WhoTaunted:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "CombatLog");
 	WhoTaunted:RegisterEvent("UPDATE_CHAT_WINDOWS", "UpdateChatWindowsOnEvent");
-	WhoTaunted:RegisterEvent("GUILD_ROSTER_UPDATE", "GuildRosterUpdate");
-	WhoTaunted:RegisterEvent("GROUP_ROSTER_UPDATE", "GroupRosterUpdate");
+	WhoTaunted:RegisterEvent("GUILD_ROSTER_UPDATE", "GuildRosterUpdateOnEvent");
+	WhoTaunted:RegisterEvent("GROUP_ROSTER_UPDATE", "GroupRosterUpdateOnEvent");
 
 	WhoTaunted:RegisterChatCommand("whotaunted", "ChatCommand");
 	WhoTaunted:RegisterChatCommand("wtaunted", "ChatCommand");
@@ -113,11 +113,11 @@ function WhoTaunted:ZoneChangedOnEvent(event, ...)
 	end
 end
 
-function WhoTaunted:GuildRosterUpdate(event, ...)
+function WhoTaunted:GuildRosterUpdateOnEvent(event, ...)
 	WhoTaunted:SendCommData();
 end
 
-function WhoTaunted:GroupRosterUpdate(event, ...)
+function WhoTaunted:GroupRosterUpdateOnEvent(event, ...)
 	WhoTaunted:SendCommData();
 end
 
@@ -352,7 +352,7 @@ function WhoTaunted:OutPut(msg, output, dest)
 			if (IsInRaid()) and (GetNumGroupMembers() >= 1) then
 				ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "RAID");
 			end
-		elseif (string.lower(output) == string.lower(WhoTaunted.OutputTypes.RaidWarning)) or (string.lower(output) == string.lower(CHAT_MSG_RAID_WARNING):gsub(" ", "")) then
+		elseif (string.lower(output) == string.lower(WhoTaunted.OutputTypes.RaidWarning)) or (string.lower(output) == string.lower(WhoTaunted.OutputTypes.RaidWarning):gsub(" ", "")) then
 			if (IsInRaid()) and (GetNumGroupMembers() >= 1) then
 				local isLeader = UnitIsGroupLeader("player");
 				local isAssistant = UnitIsGroupAssistant("player");
@@ -371,7 +371,9 @@ function WhoTaunted:OutPut(msg, output, dest)
 			ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "OFFICER");
 		elseif (string.lower(output) == string.lower(WhoTaunted.OutputTypes.Self)) then
 			if (WhoTaunted:IsChatWindow(WhoTaunted.db.profile.ChatWindow) == true) then
-				WhoTaunted:PrintToChatWindow(tostring(msg), WhoTaunted.db.profile.ChatWindow)
+				WhoTaunted:PrintToChatWindow(tostring(msg), WhoTaunted.db.profile.ChatWindow);
+			else
+				WhoTaunted:Print(tostring(msg));
 			end
 		else
 			WhoTaunted:Print(tostring(msg));
@@ -423,7 +425,7 @@ function WhoTaunted:GetChatWindows()
 		if (name) and (tostring(name) ~= COMBAT_LOG) and (tostring(name) ~= VOICE) and (name:trim() ~= "") then
 			ChatWindows[tostring(name)] = tostring(name);
 
-			if (WhoTaunted.db) and (WhoTaunted.db.profile.ChatWindow == "") then
+			if (WhoTaunted.db) and (i == 1) and ((WhoTaunted.db.profile.ChatWindow == "") or (WhoTaunted:IsChatWindow(WhoTaunted.db.profile.ChatWindow) == false)) then
 				WhoTaunted.db.profile.ChatWindow = tostring(name);
 			end
 		end
@@ -499,9 +501,7 @@ function WhoTaunted:SendCommData()
 		end
 
 		if (isInGuild) or (isInParty) or (isInRaid) then
-			local CommData;
-
-			CommData = {ID = UserID, WhoTauntedVersion = WhoTauntedVersion };
+			local CommData = {ID = UserID, WhoTauntedVersion = WhoTauntedVersion };
 			if (isInRaid == true) then
 				WhoTaunted:SendCommMessage(Env.Prefix.Version, WhoTaunted:Serialize(CommData), "RAID");
 			elseif (isInParty == true) then
