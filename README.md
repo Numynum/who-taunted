@@ -29,6 +29,11 @@ Help localize on Curseforge! - http://wow.curseforge.com/addons/who-taunted/loca
 | **Warlock**       | N/A                                  | Challenging Howl (Metamorphosis)             | N/A                                          | N/A
 
 ## Change Log
+**[v2.0.1](https://github.com/Davie3/who-taunted/releases/tag/v2.0.1)**
+- Fixed a bug where errors were thrown in Classic when a player taunts. Some code from Mainline WoW was not compatible in Classic.
+- Fixed some issues with the Chat Window Options.
+- Fixed a rare bug with the Taunt Output Options.
+
 **[v2.0](https://github.com/Davie3/who-taunted/releases/tag/v2.0)**
 - 9.2.7 Compatibility.
 - Wrath Classic 3.4.0 Support and Compatibility.
