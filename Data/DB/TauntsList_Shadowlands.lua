@@ -24,7 +24,6 @@ WhoTaunted.TauntsList = {
 	AOE = {
 		--Warrior
 		1161, --Challenging Shout
-		386071, --Disrupting Shout
 
 		--Paladin
 		204079, --Final Stand
