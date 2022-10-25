@@ -12,8 +12,12 @@
 ## X-Category: Tank
 ## X-Localizations: enUS, deDE, esEs, esMX, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW
 
+#@no-lib-strip@
 Libs\load-embeds.xml
+#@end-no-lib-strip@
+
 Localization\load-locales.xml
 WhoTaunted.lua
+
 Data\load-db.xml
 Data\load-options.xml
