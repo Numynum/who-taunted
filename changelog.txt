@@ -1,3 +1,6 @@
+v2.0.2:
+- 10.0/Dragonflight compatibility.
+
 v2.0.1:
 - Fixed a bug where errors were thrown in Classic when a player taunts. Some code from Mainline WoW was not compatible in Classic.
 - Fixed some issues with the Chat Window Options.

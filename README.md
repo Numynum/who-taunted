@@ -16,19 +16,35 @@ Help localize on Curseforge! - http://wow.curseforge.com/addons/who-taunted/loca
 
 ## Supported Taunts
 
-| Class            | Shadowlands (9.2.7)                   | Wrath (3.4.0)                                | TBC (2.5.4)                                  | Vanilla (1.14.3)
-| ---              | ---                                   | ---                                          | ---                                          | ---
-| **Warrior**      | Taunt; Challenging Shout (AOE)        | Taunt; Mocking Blow; Challenging Shout (AOE) | Taunt; Mocking Blow; Challenging Shout (AOE) | Taunt; Mocking Blow; Challenging Shout (AOE)
-| **Paladin**      | Hand of Reckoning; Final Stand (AOE)  | Hand of Reckoning; Righteous Defense (AOE)   | Righteous Defense (AOE)                      | N/A
-| **Druid**        | Growl                                 | Growl; Challenging Roar (AOE)                | Growl; Challenging Roar (AOE)                | Growl; Challenging Roar (AOE)
-| **Death Knight** | Death Grip (Blood); Dark Command      | Death Grip (Blood); Dark Command             | N/A                                          | N/A
-| **Monk**         | Provoke; Provoke on Ox Statue (AOE)   | N/A                                          | N/A                                          | N/A
-| **Demon Hunter** | Torment                               | N/A                                          | N/A                                          | N/A
-| **Hunter**       | N/A                                   | Distracting Shot                             | N/A                                          | N/A
-| **Shaman**      | N/A                                    | Stoneclaw Totem                              | Stoneclaw Totem                              | Stoneclaw Totem
-| **Warlock**       | N/A                                  | Challenging Howl (Metamorphosis)             | N/A                                          | N/A
+| Class            | Dragonflight (10.0.0)                                    | Wrath (3.4.0)                                | Vanilla (1.14.3)
+| ---              | ---                                                      | ---                                          | ---
+| **Warrior**      | Taunt; Challenging Shout (AOE); Disrupting Shout (AOE)   | Taunt; Mocking Blow; Challenging Shout (AOE) | Taunt; Mocking Blow; Challenging Shout (AOE)
+| **Paladin**      | Hand of Reckoning; Final Stand (AOE)                     | Hand of Reckoning; Righteous Defense (AOE)   | N/A
+| **Druid**        | Growl                                                    | Growl; Challenging Roar (AOE)                | Growl; Challenging Roar (AOE)
+| **Death Knight** | Death Grip (Blood); Dark Command                         | Death Grip (Blood); Dark Command             | N/A
+| **Monk**         | Provoke; Provoke on Ox Statue (AOE)                      | N/A                                          | N/A
+| **Demon Hunter** | Torment                                                  | N/A                                          | N/A
+| **Hunter**       | N/A                                                      | Distracting Shot                             | N/A
+| **Shaman**       | N/A                                                      | Stoneclaw Totem                              | Stoneclaw Totem
+| **Warlock**      | N/A                                                      | Challenging Howl (Metamorphosis)             | N/A
+
+## Supported Taunts (Legacy)
+| Class            | Shadowlands (9.2.7)                   | TBC (2.5.4)
+| ---              | ---                                   | ---
+| **Warrior**      | Taunt; Challenging Shout (AOE)        | Taunt; Mocking Blow; Challenging Shout (AOE)
+| **Paladin**      | Hand of Reckoning; Final Stand (AOE)  | Righteous Defense (AOE)
+| **Druid**        | Growl                                 | Growl; Challenging Roar (AOE)
+| **Death Knight** | Death Grip (Blood); Dark Command      | N/A
+| **Monk**         | Provoke; Provoke on Ox Statue (AOE)   | N/A
+| **Demon Hunter** | Torment                               | N/A
+| **Hunter**       | N/A                                   | N/A
+| **Shaman**      | N/A                                    | Stoneclaw Totem
+| **Warlock**       | N/A                                  | N/A
 
 ## Change Log
+**[v2.0.2](https://github.com/Davie3/who-taunted/releases/tag/v2.0.2)**
+- 10.0/Dragonflight compatibility.
+
 **[v2.0.1](https://github.com/Davie3/who-taunted/releases/tag/v2.0.1)**
 - Fixed a bug where errors were thrown in Classic when a player taunts. Some code from Mainline WoW was not compatible in Classic.
 - Fixed some issues with the Chat Window Options.
