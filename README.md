@@ -42,6 +42,9 @@ Help localize on Curseforge! - http://wow.curseforge.com/addons/who-taunted/loca
 | **Warlock**       | N/A                                  | N/A
 
 ## Change Log
+**[v2.0.3](https://github.com/Davie3/who-taunted/releases/tag/v2.0.3)**
+- Fixed a bug that would cause "You Are Not in Party" or similar system errors.
+
 **[v2.0.2](https://github.com/Davie3/who-taunted/releases/tag/v2.0.2)**
 - 10.0/Dragonflight compatibility.
 

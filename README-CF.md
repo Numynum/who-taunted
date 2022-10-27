@@ -23,6 +23,9 @@ Help localize here on Curseforge! - http://wow.curseforge.com/addons/who-taunted
 Feel free to post any of these right here! Please post any serious problems or bugs on GitHub - https://github.com/Davie3/who-taunted/issues
 
 ## Recent Change Log
+**[v2.0.3](https://www.curseforge.com/wow/addons/who-taunted/files/4053235)**
+- Fixed a bug that would cause "You Are Not in Party" or similar system errors.
+
 # [v2.0.2](https://www.curseforge.com/wow/addons/who-taunted/files/4051037)
 - 10.0/Dragonflight compatibility.
 
