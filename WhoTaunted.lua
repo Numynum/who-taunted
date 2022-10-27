@@ -114,11 +114,11 @@ function WhoTaunted:ZoneChangedOnEvent(event, ...)
 end
 
 function WhoTaunted:GuildRosterUpdateOnEvent(event, ...)
-	WhoTaunted:SendCommData();
+	WhoTaunted:SendCommData(GUILD);
 end
 
 function WhoTaunted:GroupRosterUpdateOnEvent(event, ...)
-	WhoTaunted:SendCommData();
+	WhoTaunted:SendCommData(GROUP);
 end
 
 function WhoTaunted:ChatCommand(input)
@@ -349,11 +349,11 @@ function WhoTaunted:OutPut(msg, output, dest)
 	end
 	if (msg) then
 		if (string.lower(output) == string.lower(WhoTaunted.OutputTypes.Raid)) then
-			if (IsInRaid()) and (GetNumGroupMembers() >= 1) then
+			if (IsInRaid(LE_PARTY_CATEGORY_HOME)) and (GetNumGroupMembers() >= 1) then
 				ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "RAID");
 			end
 		elseif (string.lower(output) == string.lower(WhoTaunted.OutputTypes.RaidWarning)) or (string.lower(output) == string.lower(WhoTaunted.OutputTypes.RaidWarning):gsub(" ", "")) then
-			if (IsInRaid()) and (GetNumGroupMembers() >= 1) then
+			if (IsInRaid(LE_PARTY_CATEGORY_HOME)) and (GetNumGroupMembers() >= 1) then
 				local isLeader = UnitIsGroupLeader("player");
 				local isAssistant = UnitIsGroupAssistant("player");
 				if ((isLeader) and (isLeader == true)) or ((isAssistant) and (isAssistant == true)) then
@@ -363,8 +363,7 @@ function WhoTaunted:OutPut(msg, output, dest)
 				end
 			end
 		elseif (string.lower(output) == string.lower(WhoTaunted.OutputTypes.Party)) then
-			local isInParty = UnitInParty("player");
-			if (isInParty) and (isInParty == true) and (GetNumSubgroupMembers() >= 1) then
+			if (IsInGroup(LE_PARTY_CATEGORY_HOME)) and (GetNumSubgroupMembers() >= 1) then
 				ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "PARTY");
 			end
 		elseif (string.lower(output) == string.lower(WhoTaunted.OutputTypes.Officer)) then
@@ -479,32 +478,27 @@ function WhoTaunted:GetSpellName(ID)
 	return spellName;
 end
 
-function WhoTaunted:SendCommData()
+function WhoTaunted:SendCommData(commType)
 	local inCombat = InCombatLockdown();
 
 	if (inCombat == false) then
-		local isInGuild = IsInGuild();
-		local isInParty = UnitInParty("player");
-		local isInRaid = IsInRaid();
+		local CommChannel = "";
 
-		if (isInRaid) and (isInRaid == true) and (GetNumGroupMembers() > 1) then
-			isInRaid = true;
-		end
-		if (isInParty) and (isInParty == true) and (GetNumSubgroupMembers() > 1) then
-			isInParty = true;
-		else
-			isInParty = false;
-		end
-
-		if (isInGuild) or (isInParty) or (isInRaid) then
-			local CommData = {ID = UserID, WhoTauntedVersion = WhoTauntedVersion };
-			if (isInRaid == true) then
-				WhoTaunted:SendCommMessage(Env.Prefix.Version, WhoTaunted:Serialize(CommData), "RAID");
-			elseif (isInParty == true) then
-				WhoTaunted:SendCommMessage(Env.Prefix.Version, WhoTaunted:Serialize(CommData), "PARTY");
-			elseif (isInGuild == true) then
-				WhoTaunted:SendCommMessage(Env.Prefix.Version, WhoTaunted:Serialize(CommData), "GUILD");
+		if (commType == GROUP) then
+			if (IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) or (IsInRaid(LE_PARTY_CATEGORY_INSTANCE)) then
+				CommChannel = "INSTANCE_CHAT";
+			elseif (IsInRaid(LE_PARTY_CATEGORY_HOME)) then
+				CommChannel = "RAID";
+			elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
+				CommChannel = "PARTY";
 			end
+		elseif (commType == GUILD) and (IsInGuild()) then
+			CommChannel = "GUILD";
+		end
+
+		if (CommChannel ~= "") then
+			local CommData = {ID = UserID, WhoTauntedVersion = WhoTauntedVersion };
+			WhoTaunted:SendCommMessage(Env.Prefix.Version, WhoTaunted:Serialize(CommData), CommChannel);
 		end
 	end
 end
