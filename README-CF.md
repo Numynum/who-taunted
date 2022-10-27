@@ -5,11 +5,12 @@ Tracks player taunts and displays who they taunted, what ability they used to ta
 Latest WoW versions now supported!
 
 ### Mainline and Classic
-- Shadowlands (9.2.7)
+- Dragonflight (10.0.0)
 - Wrath (3.4.0)
 - Vanilla (1.14.3)
 
 ### Legacy
+- Shadowlands (9.2.7)
 - TBC (2.5.4)
 
 Full Taunt list on GitHub - https://github.com/Davie3/who-taunted
@@ -23,7 +24,7 @@ Help localize here on Curseforge! - http://wow.curseforge.com/addons/who-taunted
 Feel free to post any of these right here! Please post any serious problems or bugs on GitHub - https://github.com/Davie3/who-taunted/issues
 
 ## Recent Change Log
-**[v2.0.3](https://www.curseforge.com/wow/addons/who-taunted/files/4053235)**
+# [v2.0.3](https://www.curseforge.com/wow/addons/who-taunted/files/4053235)
 - Fixed a bug that would cause "You Are Not in Party" or similar system errors.
 
 # [v2.0.2](https://www.curseforge.com/wow/addons/who-taunted/files/4051037)
