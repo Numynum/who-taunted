@@ -1,3 +1,6 @@
+v2.0.3:
+- Fixed a bug that would cause "You Are Not in Party" or similar system errors.
+
 v2.0.2:
 - 10.0/Dragonflight compatibility.
 

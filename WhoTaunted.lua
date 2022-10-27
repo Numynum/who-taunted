@@ -349,11 +349,11 @@ function WhoTaunted:OutPut(msg, output, dest)
 	end
 	if (msg) then
 		if (string.lower(output) == string.lower(WhoTaunted.OutputTypes.Raid)) then
-			if (IsInRaid()) and (GetNumGroupMembers() >= 1) then
+			if (IsInRaid(LE_PARTY_CATEGORY_HOME)) and (GetNumGroupMembers() >= 1) then
 				ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "RAID");
 			end
 		elseif (string.lower(output) == string.lower(WhoTaunted.OutputTypes.RaidWarning)) or (string.lower(output) == string.lower(WhoTaunted.OutputTypes.RaidWarning):gsub(" ", "")) then
-			if (IsInRaid()) and (GetNumGroupMembers() >= 1) then
+			if (IsInRaid(LE_PARTY_CATEGORY_HOME)) and (GetNumGroupMembers() >= 1) then
 				local isLeader = UnitIsGroupLeader("player");
 				local isAssistant = UnitIsGroupAssistant("player");
 				if ((isLeader) and (isLeader == true)) or ((isAssistant) and (isAssistant == true)) then
@@ -363,8 +363,7 @@ function WhoTaunted:OutPut(msg, output, dest)
 				end
 			end
 		elseif (string.lower(output) == string.lower(WhoTaunted.OutputTypes.Party)) then
-			local isInParty = UnitInParty("player");
-			if (isInParty) and (isInParty == true) and (GetNumSubgroupMembers() >= 1) then
+			if (IsInGroup(LE_PARTY_CATEGORY_HOME)) and (GetNumSubgroupMembers() >= 1) then
 				ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "PARTY");
 			end
 		elseif (string.lower(output) == string.lower(WhoTaunted.OutputTypes.Officer)) then
