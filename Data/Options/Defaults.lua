@@ -17,6 +17,7 @@ WhoTaunted.defaults = {
 		AnounceAOETauntsOutput = WhoTaunted.OutputTypes.Self,
 		AnounceFails = true,
 		AnounceFailsOutput = WhoTaunted.OutputTypes.Self,
+		DefaultToSelf = true,
 		ConvertedProfiles = false,
 	},
 }

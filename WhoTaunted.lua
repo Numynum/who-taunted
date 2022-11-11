@@ -348,11 +348,11 @@ function WhoTaunted:OutPut(msg, output, dest)
 		output = WhoTaunted.OutputTypes.Self;
 	end
 	if (msg) then
-		if (string.lower(output) == string.lower(WhoTaunted.OutputTypes.Raid)) then
+		if (WhoTaunted:FormatString(output) == WhoTaunted:FormatString(WhoTaunted.OutputTypes.Raid)) then
 			if (IsInRaid(LE_PARTY_CATEGORY_HOME)) and (GetNumGroupMembers() >= 1) then
 				ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "RAID");
 			end
-		elseif (string.lower(output) == string.lower(WhoTaunted.OutputTypes.RaidWarning)) or (string.lower(output) == string.lower(WhoTaunted.OutputTypes.RaidWarning):gsub(" ", "")) then
+		elseif (WhoTaunted:FormatString(output) == WhoTaunted:FormatString(WhoTaunted.OutputTypes.RaidWarning)) or (WhoTaunted:FormatString(output) == WhoTaunted:FormatString(WhoTaunted.OutputTypes.RaidWarning):gsub(" ", "")) then
 			if (IsInRaid(LE_PARTY_CATEGORY_HOME)) and (GetNumGroupMembers() >= 1) then
 				local isLeader = UnitIsGroupLeader("player");
 				local isAssistant = UnitIsGroupAssistant("player");
@@ -361,14 +361,22 @@ function WhoTaunted:OutPut(msg, output, dest)
 				else
 					ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "RAID");
 				end
+			elseif (WhoTaunted.db.profile.DefaultToSelf == true) then
+				WhoTaunted:Print(tostring(msg));
 			end
-		elseif (string.lower(output) == string.lower(WhoTaunted.OutputTypes.Party)) then
+		elseif (WhoTaunted:FormatString(output) == WhoTaunted:FormatString(WhoTaunted.OutputTypes.Party)) then
 			if (IsInGroup(LE_PARTY_CATEGORY_HOME)) and (GetNumSubgroupMembers() >= 1) then
 				ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "PARTY");
+			elseif (WhoTaunted.db.profile.DefaultToSelf == true) then
+				WhoTaunted:Print(tostring(msg));
 			end
-		elseif (string.lower(output) == string.lower(WhoTaunted.OutputTypes.Officer)) then
-			ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "OFFICER");
-		elseif (string.lower(output) == string.lower(WhoTaunted.OutputTypes.Self)) then
+		elseif (WhoTaunted:FormatString(output) == WhoTaunted:FormatString(WhoTaunted.OutputTypes.Officer)) then
+			if (IsInGuild()) then
+				ChatThrottleLib:SendChatMessage("NORMAL", "WhoTaunted", tostring(msg), "OFFICER");
+			elseif (WhoTaunted.db.profile.DefaultToSelf == true) then
+				WhoTaunted:Print(tostring(msg));
+			end
+		elseif (WhoTaunted:FormatString(output) == WhoTaunted:FormatString(WhoTaunted.OutputTypes.Self)) then
 			if (WhoTaunted:IsChatWindow(WhoTaunted.db.profile.ChatWindow) == true) then
 				WhoTaunted:PrintToChatWindow(tostring(msg), WhoTaunted.db.profile.ChatWindow);
 			else
@@ -384,14 +392,18 @@ function WhoTaunted:GetOutputType(TauntType)
 	local OutputType = WhoTaunted.OutputTypes.Self;
 
 	if (TauntType == TauntTypes.Normal) then
-		OutputType = WhoTaunted.db.profile.AnounceTauntsOutput;
+		OutputType = WhoTaunted.OutputTypes[WhoTaunted.db.profile.AnounceTauntsOutput];
 	elseif (TauntType == TauntTypes.AOE) then
-		OutputType = WhoTaunted.db.profile.AnounceAOETauntsOutput;
+		OutputType = WhoTaunted.OutputTypes[WhoTaunted.db.profile.AnounceAOETauntsOutput];
 	elseif (TauntType == TauntTypes.Failed) then
-		OutputType = WhoTaunted.db.profile.AnounceFailsOutput;
+		OutputType = WhoTaunted.OutputTypes[WhoTaunted.db.profile.AnounceFailsOutput];
 	end
 
 	return OutputType;
+end
+
+function WhoTaunted:FormatString(s)
+	return string.lower(tostring(s)):trim();
 end
 
 function WhoTaunted:IsChatChannel(ChannelName)
@@ -399,7 +411,7 @@ function WhoTaunted:IsChatChannel(ChannelName)
 
 	for i = 1, NUM_CHAT_WINDOWS, 1 do
 		for k, v in pairs({ GetChatWindowChannels(i) }) do
-			if (string.lower(tostring(v)) == string.lower(tostring(ChannelName))) then
+			if (WhoTaunted:FormatString(v) == WhoTaunted:FormatString(ChannelName)) then
 				IsChatChannel = true;
 				break;
 			end

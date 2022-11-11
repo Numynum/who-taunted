@@ -176,8 +176,21 @@ WhoTaunted.options = {
                     end,
 					order = 20
 				},
+                DefaultToSelf = {
+                    type = "toggle",
+                    name = L["Default to Self"],
+                    desc = L["Default the output to Self if any of the below outputs are unavailable. For example, if you are not in a party or raid."],
+                    width = "full",
+                    get = function(info)
+                        return WhoTaunted.db.profile.DefaultToSelf;
+                    end,
+                    set = function(info, v)
+                        WhoTaunted.db.profile.DefaultToSelf = v;
+                    end,
+                    order = 30
+                },
                 AnnouncementsHeader = {
-                    order = 30,
+                    order = 40,
                     type = "header",
                     name = L["Announcements"],
                 },
@@ -194,7 +207,7 @@ WhoTaunted.options = {
                         WhoTaunted.db.profile.AnounceTaunts = v;
                         WhoTaunted:CheckOptions();
                     end,
-                    order = 40
+                    order = 50
                 },
                 AnounceTauntsOutput = {
 					type = "select",
@@ -211,7 +224,7 @@ WhoTaunted.options = {
                         WhoTaunted.db.profile.AnounceTauntsOutput = v;
                         WhoTaunted:CheckOptions();
                     end,
-					order = 50
+					order = 60
 				},
                 AnounceAOETaunts = {
                     type = "toggle",
@@ -226,7 +239,7 @@ WhoTaunted.options = {
                         WhoTaunted.db.profile.AnounceAOETaunts = v;
                         WhoTaunted:CheckOptions();
                     end,
-                    order = 60
+                    order = 70
                 },
                 AnounceAOETauntsOutput = {
 					type = "select",
@@ -243,7 +256,7 @@ WhoTaunted.options = {
                         WhoTaunted.db.profile.AnounceAOETauntsOutput = v;
                         WhoTaunted:CheckOptions();
                     end,
-					order = 70
+					order = 80
 				},
                 AnounceFails = {
                     type = "toggle",
@@ -258,7 +271,7 @@ WhoTaunted.options = {
                         WhoTaunted.db.profile.AnounceFails = v;
                         WhoTaunted:CheckOptions();
                     end,
-                    order = 80
+                    order = 90
                 },
                 AnounceFailsOutput = {
 					type = "select",
@@ -275,7 +288,7 @@ WhoTaunted.options = {
                         WhoTaunted.db.profile.AnounceFailsOutput = v;
                         WhoTaunted:CheckOptions();
                     end,
-					order = 90
+					order = 100
 				}
             }
         },
@@ -328,13 +341,13 @@ function WhoTaunted:CheckOptions()
 		WhoTaunted.options.args.General.args.RighteousDefenseTarget.hidden = true;
 	end
 
-	if (WhoTaunted.db.profile.AnounceTauntsOutput ~= WhoTaunted.OutputTypes.Self) or (WhoTaunted.db.profile.AnounceAOETauntsOutput ~= WhoTaunted.OutputTypes.Self) or (WhoTaunted.db.profile.AnounceFailsOutput ~= WhoTaunted.OutputTypes.Self) then
+	if (WhoTaunted.OutputTypes[WhoTaunted.db.profile.AnounceTauntsOutput] ~= WhoTaunted.OutputTypes.Self) or (WhoTaunted.OutputTypes[WhoTaunted.db.profile.AnounceAOETauntsOutput] ~= WhoTaunted.OutputTypes.Self) or (WhoTaunted.OutputTypes[WhoTaunted.db.profile.AnounceFailsOutput] ~= WhoTaunted.OutputTypes.Self) then
 		WhoTaunted.options.args.Announcements.args.Prefix.disabled = false;
 	else
 		WhoTaunted.options.args.Announcements.args.Prefix.disabled = true;
 	end
 
-	if (WhoTaunted.db.profile.AnounceTauntsOutput == WhoTaunted.OutputTypes.Self) or (WhoTaunted.db.profile.AnounceAOETauntsOutput == WhoTaunted.OutputTypes.Self) or (WhoTaunted.db.profile.AnounceFailsOutput == WhoTaunted.OutputTypes.Self) then
+	if (WhoTaunted.OutputTypes[WhoTaunted.db.profile.AnounceTauntsOutput] == WhoTaunted.OutputTypes.Self) or (WhoTaunted.OutputTypes[WhoTaunted.db.profile.AnounceAOETauntsOutput] == WhoTaunted.OutputTypes.Self) or (WhoTaunted.OutputTypes[WhoTaunted.db.profile.AnounceFailsOutput] == WhoTaunted.OutputTypes.Self) then
 		WhoTaunted.options.args.Announcements.args.ChatWindow.disabled = false;
 	else
 		WhoTaunted.options.args.Announcements.args.ChatWindow.disabled = true;
@@ -358,15 +371,15 @@ function WhoTaunted:CheckOptions()
 		WhoTaunted.options.args.Announcements.args.AnounceFailsOutput.disabled = true;
 	end
 
-    if (not tContains(WhoTaunted.OutputTypes, WhoTaunted.db.profile.AnounceTauntsOutput)) then
+    if (WhoTaunted:CheckOutputTypeOptions(WhoTaunted.db.profile.AnounceTauntsOutput) == false) then
         WhoTaunted.db.profile.AnounceTauntsOutput = WhoTaunted.OutputTypes.Self;
     end
 
-    if (not tContains(WhoTaunted.OutputTypes, WhoTaunted.db.profile.AnounceAOETauntsOutput)) then
+    if (WhoTaunted:CheckOutputTypeOptions(WhoTaunted.db.profile.AnounceAOETauntsOutput) == false) then
         WhoTaunted.db.profile.AnounceAOETauntsOutput = WhoTaunted.OutputTypes.Self;
     end
 
-    if (not tContains(WhoTaunted.OutputTypes, WhoTaunted.db.profile.AnounceFailsOutput)) then
+    if (WhoTaunted:CheckOutputTypeOptions(WhoTaunted.db.profile.AnounceFailsOutput) == false) then
         WhoTaunted.db.profile.AnounceFailsOutput = WhoTaunted.OutputTypes.Self;
     end
 
@@ -386,4 +399,21 @@ function WhoTaunted:CheckOptions()
 		WhoTaunted.options.args.Profiles.disabled = false;
 		WhoTaunted.options.args.FAQ.disabled = false;
 	end
+end
+
+function WhoTaunted:CheckOutputTypeOptions(output)
+    local found = false;
+
+    for k, v in pairs(WhoTaunted.OutputTypes) do
+        if (WhoTaunted:FormatString(output) == WhoTaunted:FormatString(k)) then
+            found = true;
+            break;
+        end
+        if (WhoTaunted:FormatString(output) == WhoTaunted:FormatString(v)) then
+            found = true;
+            break;
+        end
+	end
+
+    return found;
 end
