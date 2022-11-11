@@ -38,18 +38,22 @@ Help localize on Curseforge! - http://wow.curseforge.com/addons/who-taunted/loca
 | **Monk**         | Provoke; Provoke on Ox Statue (AOE)   | N/A
 | **Demon Hunter** | Torment                               | N/A
 | **Hunter**       | N/A                                   | N/A
-| **Shaman**      | N/A                                    | Stoneclaw Totem
-| **Warlock**       | N/A                                  | N/A
+| **Shaman**       | N/A                                    | Stoneclaw Totem
+| **Warlock**      | N/A                                  | N/A
 
 ## Change Log
+**[v2.0.4](https://github.com/Davie3/who-taunted/releases/tag/v2.0.4)**
+- Fixed a localization issue which caused options for Output types to not function correctly (#15).
+- Added a new option which defaults the output to Self if any of the outputs are unavailable. For example, if you are not in a party or raid.
+
 **[v2.0.3](https://github.com/Davie3/who-taunted/releases/tag/v2.0.3)**
-- Fixed a bug that would cause "You Are Not in Party" or similar system errors.
+- Fixed a bug that would cause "You Are Not in Party" or similar system errors (#12).
 
 **[v2.0.2](https://github.com/Davie3/who-taunted/releases/tag/v2.0.2)**
 - 10.0/Dragonflight compatibility.
 
 **[v2.0.1](https://github.com/Davie3/who-taunted/releases/tag/v2.0.1)**
-- Fixed a bug where errors were thrown in Classic when a player taunts. Some code from Mainline WoW was not compatible in Classic.
+- Fixed a bug where errors were thrown in Classic when a player taunts. Some code from Mainline WoW was not compatible in Classic (#8).
 - Fixed some issues with the Chat Window Options.
 - Fixed a rare bug with the Taunt Output Options.
 
