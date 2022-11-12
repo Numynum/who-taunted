@@ -24,19 +24,18 @@ Help localize here on Curseforge! - http://wow.curseforge.com/addons/who-taunted
 Feel free to post any of these right here! Please post any serious problems or bugs on GitHub - https://github.com/Davie3/who-taunted/issues
 
 ## Recent Change Log
-## Change Log
-**[v2.0.4](https://www.curseforge.com/wow/addons/who-taunted/files/4077638)**
-- Fixed a localization issue which caused options for Output types to not function correctly (#15).
+# [v2.0.4](https://www.curseforge.com/wow/addons/who-taunted/files/4077638)
+- Fixed a localization issue which caused options for Output types to not function correctly ([#15](https://github.com/Davie3/who-taunted/issues/15)).
 - Added a new option which defaults the output to Self if any of the outputs are unavailable. For example, if you are not in a party or raid.
 
 # [v2.0.3](https://www.curseforge.com/wow/addons/who-taunted/files/4053235)
-- Fixed a bug that would cause "You Are Not in Party" or similar system errors (#12).
+- Fixed a bug that would cause "You Are Not in Party" or similar system errors ([#12](https://github.com/Davie3/who-taunted/issues/12)).
 
 # [v2.0.2](https://www.curseforge.com/wow/addons/who-taunted/files/4051037)
 - 10.0/Dragonflight compatibility.
 
 # [v2.0.1](https://www.curseforge.com/wow/addons/who-taunted/files/4017737)
-- Fixed a bug where errors were thrown in Classic when a player taunts. Some code from Mainline WoW was not compatible in Classic (#8).
+- Fixed a bug where errors were thrown in Classic when a player taunts. Some code from Mainline WoW was not compatible in Classic ([#8](https://github.com/Davie3/who-taunted/issues/8)).
 - Fixed some issues with the Chat Window Options.
 - Fixed a rare bug with the Taunt Output Options.
 
