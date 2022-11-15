@@ -24,6 +24,10 @@ Help localize here on Curseforge! - http://wow.curseforge.com/addons/who-taunted
 Feel free to post any of these right here! Please post any serious problems or bugs on GitHub - https://github.com/Davie3/who-taunted/issues
 
 ## Recent Change Log
+# [v2.0.5](https://www.curseforge.com/wow/addons/who-taunted/files/4087970)
+- 10.0.2 compatibility.
+- Minor code change for Party and Raid detection.
+
 # [v2.0.4](https://www.curseforge.com/wow/addons/who-taunted/files/4077638)
 - Fixed a localization issue which caused options for Output types to not function correctly ([#15](https://github.com/Davie3/who-taunted/issues/15)).
 - Added a new option which defaults the output to Self if any of the outputs are unavailable. For example, if you are not in a party or raid.

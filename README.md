@@ -42,6 +42,10 @@ Help localize on Curseforge! - http://wow.curseforge.com/addons/who-taunted/loca
 | **Warlock**      | N/A                                  | N/A
 
 ## Change Log
+**[v2.0.5](https://github.com/Davie3/who-taunted/releases/tag/v2.0.5)**
+- 10.0.2 compatibility.
+- Minor code change for Party and Raid detection.
+
 **[v2.0.4](https://github.com/Davie3/who-taunted/releases/tag/v2.0.4)**
 - Fixed a localization issue which caused options for Output types to not function correctly ([#15](https://github.com/Davie3/who-taunted/issues/15)).
 - Added a new option which defaults the output to Self if any of the outputs are unavailable. For example, if you are not in a party or raid.
