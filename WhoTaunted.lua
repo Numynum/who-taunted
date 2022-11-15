@@ -129,7 +129,7 @@ end
 
 function WhoTaunted:DisplayTaunt(Event, Name, ID, TargetGUID, Target, FailType, Time)
 	if (Event) and (Name) and (ID) and (Time) and (WhoTaunted:IsRecentTaunt(Name, ID, Time) == false) then
-		if (WhoTaunted.db.profile.Disabled == false) and (BgDisable == false) and (DisableInPvPZone == false) and (UnitIsPlayer(Name)) and ((UnitInParty("player")) or (UnitInRaid("player"))) and ((UnitInParty(Name)) or (UnitInRaid(Name))) then
+		if (WhoTaunted.db.profile.Disabled == false) and (BgDisable == false) and (DisableInPvPZone == false) and (UnitIsPlayer(Name)) and (((IsInGroup(LE_PARTY_CATEGORY_HOME)) or (IsInRaid(LE_PARTY_CATEGORY_HOME))) or ((IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) or (IsInRaid(LE_PARTY_CATEGORY_INSTANCE)))) and ((UnitInParty(Name)) or (UnitInRaid(Name))) then
 			local OutputMessage = nil;
 			local IsTaunt, TauntType;
 			local OutputType;
