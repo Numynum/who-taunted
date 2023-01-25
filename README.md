@@ -16,7 +16,7 @@ Help localize on Curseforge! - http://wow.curseforge.com/addons/who-taunted/loca
 
 ## Supported Taunts
 
-| Class            | Dragonflight (10.0.0)                                    | Wrath (3.4.1)                                | Vanilla (1.14.3)
+| Class            | Dragonflight (10.0.5)                                    | Wrath (3.4.1)                                | Vanilla (1.14.3)
 | ---              | ---                                                      | ---                                          | ---
 | **Warrior**      | Taunt; Challenging Shout (AOE); Disrupting Shout (AOE)   | Taunt; Mocking Blow; Challenging Shout (AOE) | Taunt; Mocking Blow; Challenging Shout (AOE)
 | **Paladin**      | Hand of Reckoning; Final Stand (AOE)                     | Hand of Reckoning; Righteous Defense (AOE)   | N/A
@@ -42,6 +42,9 @@ Help localize on Curseforge! - http://wow.curseforge.com/addons/who-taunted/loca
 | **Warlock**      | N/A                                  | N/A
 
 ## Change Log
+**[v2.0.7](https://github.com/Davie3/who-taunted/releases/tag/v2.0.7)**
+- 10.0.5 compatibility.
+
 **[v2.0.6](https://github.com/Davie3/who-taunted/releases/tag/v2.0.6)**
 - Wrath Classic 3.4.1 Compatibility.
 
