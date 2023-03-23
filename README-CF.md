@@ -24,6 +24,9 @@ Help localize here on Curseforge! - http://wow.curseforge.com/addons/who-taunted
 Feel free to post any of these right here! Please post any serious problems or bugs on GitHub - https://github.com/Davie3/who-taunted/issues
 
 ## Recent Change Log
+# [v2.0.8](https://www.curseforge.com/wow/addons/who-taunted/files/4452623)
+- 10.0.7 compatibility.
+
 # [v2.0.7](https://www.curseforge.com/wow/addons/who-taunted/files/4363881)
 - 10.0.5 compatibility.
 
