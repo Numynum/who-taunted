@@ -22,7 +22,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Extract repo Interface Numbers
+      - name: Extract Repo Interface Numbers
         id: repo_extract_interface
         run: |
           MAINLINE_INTERFACE_NUMBER=$(grep -oP '## Interface: \K\d+' $RETAIL_TOC)
@@ -67,6 +67,7 @@ jobs:
           echo "classic_interface_number=$CLASSIC_INTERFACE_NUMBER" >> $GITHUB_OUTPUT
 
       - name: Get Mainline Version
+        if: ${{ steps.repo_extract_interface.outputs.mainline_interface_number != steps.extract_interface.outputs.mainline_interface_number || steps.repo_extract_interface.outputs.classic_interface_number != steps.extract_interface.outputs.classic_interface_number }}
         id: mainline_version
         run: |
           #!/bin/bash
@@ -77,6 +78,7 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Get Classic Version
+        if: ${{ steps.repo_extract_interface.outputs.mainline_interface_number != steps.extract_interface.outputs.mainline_interface_number || steps.repo_extract_interface.outputs.classic_interface_number != steps.extract_interface.outputs.classic_interface_number }}
         id: classic_version
         run: |
           #!/bin/bash
@@ -94,8 +96,8 @@ jobs:
           replace: "${{ env.MAINLINE_NAME }} (${{ steps.mainline_version.outputs.version }})"
           regex: false
 
-      - name: Find and Replace Mainline Version Number
-        if: ${{ steps.repo_extract_interface.outputs.mainline_interface_number != steps.extract_interface.outputs.mainline_interface_number }}
+      - name: Find and Replace Classic Version Number
+        if: ${{ steps.repo_extract_interface.outputs.classic_interface_number != steps.extract_interface.outputs.classic_interface_number }}
         uses: jacobtomlinson/gha-find-replace@v3
         with:
           find: "${{ env.CLASSIC_NAME }} (${{ steps.repo_extract_version.outputs.classic_version }})"
@@ -111,6 +113,7 @@ jobs:
           version_format: "${major}.${minor}.${increment}"
 
       - name: Update changelog
+        if: ${{ steps.repo_extract_interface.outputs.mainline_interface_number != steps.extract_interface.outputs.mainline_interface_number || steps.repo_extract_interface.outputs.classic_interface_number != steps.extract_interface.outputs.classic_interface_number }}
         run: |
           echo "${{ steps.repo_semantic_version.outputs.version_tag }}:" >> temp_changelog.txt
           echo "- ${{ steps.mainline_version.outputs.version }} ${{ env.MAINLINE_NAME }} compatibility." >> temp_changelog.txt
@@ -120,6 +123,7 @@ jobs:
           mv temp_changelog.txt $CHANGELOG
 
       - name: Update README.md
+        if: ${{ steps.repo_extract_interface.outputs.mainline_interface_number != steps.extract_interface.outputs.mainline_interface_number || steps.repo_extract_interface.outputs.classic_interface_number != steps.extract_interface.outputs.classic_interface_number }}
         run: |
           #!/bin/bash
           file_path="README.md"
@@ -131,6 +135,7 @@ jobs:
           awk -v start="$start_line" -v lines="$new_lines" 'NR==start+1 {print lines} {print}' "$file_path" >tmpfile && mv tmpfile "$file_path"
 
       - name: Update README-CF.md
+        if: ${{ steps.repo_extract_interface.outputs.mainline_interface_number != steps.extract_interface.outputs.mainline_interface_number || steps.repo_extract_interface.outputs.classic_interface_number != steps.extract_interface.outputs.classic_interface_number }}
         run: |
           #!/bin/bash
           file_path="README-CF.md"
