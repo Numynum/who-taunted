@@ -1,7 +1,7 @@
 # Who Taunted?
 Addon project for World of Warcraft.
 
-https://wow.curseforge.com/projects/who-taunted
+https://www.curseforge.com/wow/addons/who-taunted
 
 ## About
 Tracks player taunts and displays who they taunted, what ability they used to taunt, and if it failed in some way.
@@ -12,7 +12,7 @@ Please report any issues on GitHub - https://github.com/Davie3/who-taunted/issue
 
 ## Localization
 
-Help localize on Curseforge! - http://wow.curseforge.com/addons/who-taunted/localization/
+Help localize on Curseforge! - https://legacy.curseforge.com/wow/addons/who-taunted/localization
 
 ## Supported Taunts
 

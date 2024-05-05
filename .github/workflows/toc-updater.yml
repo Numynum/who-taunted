@@ -173,7 +173,9 @@ jobs:
             - [ ] [Create new version tag/release](https://github.com/Davie3/test-toc-update/releases/new?tag=${{ steps.repo_semantic_version.outputs.version_tag }}&target=mainline-${{ steps.extract_interface.outputs.mainline_interface_number }}-classic-${{ steps.extract_interface.outputs.classic_interface_number }})
             - [ ] Update CurseForge ${{ steps.repo_semantic_version.outputs.version_tag }} file changelog
             - [ ] Update README-CF.md with CurseForge ${{ steps.repo_semantic_version.outputs.version_tag }} file URL
-            - [ ] Update CurseForge Description
+            - [ ] Update [CurseForge Description](https://authors.curseforge.com/#/projects/20051/description)
+            - [ ] Download latest [CurseForge Version](https://www.curseforge.com/wow/addons/who-taunted/files)
+            - [ ] Upload and update [WoWInterface Version](https://www.wowinterface.com/downloads/info14842-WhoTaunted.html)
             - [ ] Merge PR
 
             > PR Auto-generated utilizing [update-toc-action][1]
