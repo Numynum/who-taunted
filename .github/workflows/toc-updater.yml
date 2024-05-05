@@ -26,10 +26,10 @@ jobs:
         id: repo_extract_interface
         run: |
           MAINLINE_INTERFACE_NUMBER=$(grep -oP '## Interface: \K\d+' $RETAIL_TOC)
-          echo "Interface Number is $MAINLINE_INTERFACE_NUMBER"
+          echo "Repo Mainline Interface Number: $MAINLINE_INTERFACE_NUMBER"
           echo "mainline_interface_number=$MAINLINE_INTERFACE_NUMBER" >> $GITHUB_OUTPUT
           CLASSIC_INTERFACE_NUMBER=$(grep -oP '## Interface: \K\d+' $CLASSIC_TOC)
-          echo "Interface Number is $CLASSIC_INTERFACE_NUMBER"
+          echo "Repo Classic Interface Number: $CLASSIC_INTERFACE_NUMBER"
           echo "classic_interface_number=$CLASSIC_INTERFACE_NUMBER" >> $GITHUB_OUTPUT
 
       - name: Extract Repo Versions
@@ -56,17 +56,17 @@ jobs:
           toc-path: "$CLASSIC_TOC"
           product: "wow_classic"
 
-      - name: Extract Mainline Interface Number
+      - name: Extract Post-Update Interface Numbers
         id: extract_interface
         run: |
           MAINLINE_INTERFACE_NUMBER=$(grep -oP '## Interface: \K\d+' $RETAIL_TOC)
-          echo "Interface Number is $MAINLINE_INTERFACE_NUMBER"
+          echo "Post-update Mainline Interface Number: $MAINLINE_INTERFACE_NUMBER"
           echo "mainline_interface_number=$MAINLINE_INTERFACE_NUMBER" >> $GITHUB_OUTPUT
           CLASSIC_INTERFACE_NUMBER=$(grep -oP '## Interface: \K\d+' $CLASSIC_TOC)
-          echo "Interface Number is $CLASSIC_INTERFACE_NUMBER"
+          echo "Post-update Classic Interface Number: $CLASSIC_INTERFACE_NUMBER"
           echo "classic_interface_number=$CLASSIC_INTERFACE_NUMBER" >> $GITHUB_OUTPUT
 
-      - name: Get Mainline Version
+      - name: Get Mainline Version Number
         if: ${{ steps.repo_extract_interface.outputs.mainline_interface_number != steps.extract_interface.outputs.mainline_interface_number || steps.repo_extract_interface.outputs.classic_interface_number != steps.extract_interface.outputs.classic_interface_number }}
         id: mainline_version
         run: |
@@ -74,10 +74,10 @@ jobs:
           html_content=$(curl -s "$TOC_FORMAT_WEBSITE")
           line=$(echo "$html_content" | grep -B 1 '<code>${{ steps.extract_interface.outputs.mainline_interface_number }}</code>' | head -n 1)
           VERSION=$(echo "$line" | sed -n 's/.*<td>\(.*\)<\/td>.*/\1/p')
-          echo "Version: $VERSION"
+          echo "Mainline Version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Get Classic Version
+      - name: Get Classic Version Number
         if: ${{ steps.repo_extract_interface.outputs.mainline_interface_number != steps.extract_interface.outputs.mainline_interface_number || steps.repo_extract_interface.outputs.classic_interface_number != steps.extract_interface.outputs.classic_interface_number }}
         id: classic_version
         run: |
@@ -85,7 +85,7 @@ jobs:
           html_content=$(curl -s "$TOC_FORMAT_WEBSITE")
           line=$(echo "$html_content" | grep -B 1 '<code>${{ steps.extract_interface.outputs.classic_interface_number }}</code>' | head -n 1)
           VERSION=$(echo "$line" | sed -n 's/.*<td>\(.*\)<\/td>.*/\1/p')
-          echo "Version: $VERSION"
+          echo "Classic Version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Find and Replace Mainline Version Number
@@ -104,7 +104,7 @@ jobs:
           replace: "${{ env.CLASSIC_NAME }} (${{ steps.classic_version.outputs.version }})"
           regex: false
 
-      - name: Get Semantic Version
+      - name: Get WhoTaunted Semantic Version
         id: repo_semantic_version
         if: ${{ steps.repo_extract_interface.outputs.mainline_interface_number != steps.extract_interface.outputs.mainline_interface_number || steps.repo_extract_interface.outputs.classic_interface_number != steps.extract_interface.outputs.classic_interface_number }}
         uses: PaulHatch/semantic-version@v5.4.0
