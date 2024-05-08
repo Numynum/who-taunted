@@ -178,7 +178,7 @@ jobs:
         run: |
           #!/bin/bash
           file_path="README.md"
-          new_lines="**[${{ steps.repo_semantic_version.outputs.version_tag }}](https://github.com/Davie3/who-taunted/releases/tag/${{ steps.repo_semantic_version.outputs.version_tag }})**
+          new_lines="## [${{ steps.repo_semantic_version.outputs.version_tag }}](https://github.com/Davie3/who-taunted/releases/tag/${{ steps.repo_semantic_version.outputs.version_tag }})
           "
 
           # Add Mainline compatibility line if there is a change
