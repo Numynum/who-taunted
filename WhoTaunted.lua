@@ -2,14 +2,11 @@ WhoTaunted = LibStub("AceAddon-3.0"):NewAddon("WhoTaunted", "AceEvent-3.0", "Ace
 local AceConfig = LibStub("AceConfigDialog-3.0");
 local L = LibStub("AceLocale-3.0"):GetLocale("WhoTaunted");
 
-local PlayerName, PlayerRealm = UnitName("player");
-local UserID = tonumber(tostring(UnitGUID("player")):sub(12), 16);
+local PlayerName = UnitName("player");
 local BgDisable = false;
 local DisableInPvPZone = false;
 local GroupDisable = false;
-local version, build, date, tocVersion = GetBuildInfo();
-local WhoTauntedVersion = GetAddOnMetadata("WhoTaunted", "Version");
-local NewVersionAvailable = false;
+local WhoTauntedVersion = C_AddOns.GetAddOnMetadata("WhoTaunted", "Version");
 local RecentTaunts = {};
 local TauntTypes = {
 	Normal = "Normal",
@@ -36,13 +33,13 @@ local Env = {
 	},
 };
 
-local orgGetSpellLink = GetSpellLink;
+local orgGetSpellLink = C_Spell and C_Spell.GetSpellLink or GetSpellLink;
 local linkCache = {};
 local function GetSpellLink(ID)
     if not linkCache[ID] then
         linkCache[ID] = orgGetSpellLink(ID);
     end
-    
+
     return linkCache[ID];
 end
 local tauntListMap = {SingleTarget = {}, AOE = {}};
@@ -60,14 +57,11 @@ function WhoTaunted:OnInitialize()
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ZoneChangedOnEvent");
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "CombatLog");
 	self:RegisterEvent("UPDATE_CHAT_WINDOWS", "UpdateChatWindowsOnEvent");
-	self:RegisterEvent("GUILD_ROSTER_UPDATE", "GuildRosterUpdateOnEvent");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", "GroupRosterUpdateOnEvent");
 
 	self:RegisterChatCommand("whotaunted", "ChatCommand");
 	self:RegisterChatCommand("wtaunted", "ChatCommand");
 	self:RegisterChatCommand("wtaunt", "ChatCommand");
-
-	self:RegisterComm(Env.Prefix.Version);
 
 	self.db = LibStub("AceDB-3.0"):New("WhoTauntedDB", self.defaults, "Default");
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("WhoTaunted", self.options);
@@ -103,76 +97,65 @@ function WhoTaunted:OnDisable()
 	self:ClearRecentTaunts();
 end
 
-function WhoTaunted:UpdateChatWindowsOnEvent(event, ...)
+function WhoTaunted:UpdateChatWindowsOnEvent()
 	self:UpdateChatWindows();
 end
 
 function WhoTaunted:CombatLog()
-	local timestamp, subEvent, hideCaster, srcGUID, srcName, srcFlags, srcFlags2, dstGUID, dstName, dstFlags, dstFlags2, spellID, spellName, spellSchool, extraSpellID, extraSpellName, extraSpellSchool, auraType = CombatLogGetCurrentEventInfo();
+	local _, subEvent, _, _, srcName, _, _, dstGUID, dstName, _, _, spellID, _, _, extraSpellID = CombatLogGetCurrentEventInfo();
 	self:DisplayTaunt(subEvent, srcName, spellID, dstGUID, dstName, extraSpellID, GetServerTime());
 end
 
-function WhoTaunted:EnteringWorldOnEvent(event, ...)
+function WhoTaunted:EnteringWorldOnEvent()
 	local inInstance, instanceType = IsInInstance();
     BgDisable = inInstance and instanceType == "pvp" and self.db.profile.DisableInBG;
     self:GroupRosterUpdateOnEvent();
 	self:ClearRecentTaunts();
 end
 
-function WhoTaunted:RegenEnabledOnEvent(event, ...)
+function WhoTaunted:RegenEnabledOnEvent()
 	self:ClearRecentTaunts();
 end
 
 function WhoTaunted:UpdateCLUERegistered()
-    if 
-        self.db.profile.Disabled or BgDisable or DisableInPvPZone or GroupDisable
-    then
+    if self.db.profile.Disabled or BgDisable or DisableInPvPZone or GroupDisable then
         self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
     else
         self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "CombatLog");
     end
 end
 
-function WhoTaunted:ZoneChangedOnEvent(event, ...)
+function WhoTaunted:ZoneChangedOnEvent()
     DisableInPvPZone = self.db.profile.DisableInPvPZone and self:IsPvPZone(C_Map.GetBestMapForUnit("player"));
     self:UpdateCLUERegistered();
 end
 
-function WhoTaunted:GuildRosterUpdateOnEvent(event, ...)
-	self:SendCommData(GUILD);
-end
-
-function WhoTaunted:GroupRosterUpdateOnEvent(event, ...)
-    GroupDisable = not (IsInGroup(LE_PARTY_CATEGORY_HOME) or IsInRaid(LE_PARTY_CATEGORY_HOME) or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) or IsInRaid(LE_PARTY_CATEGORY_INSTANCE));
+function WhoTaunted:GroupRosterUpdateOnEvent()
+    GroupDisable = not (IsInGroup() or IsInRaid());
     self:UpdateCLUERegistered();
-	self:SendCommData(GROUP);
 end
 
-function WhoTaunted:ChatCommand(input)
-	if (not input) or (input:trim() == "") then
-		InterfaceOptionsFrame_OpenToCategory("Who Taunted?");
-	end
+function WhoTaunted:ChatCommand()
+    Settings.OpenToCategory("Who Taunted?");
 end
 
 function WhoTaunted:DisplayTaunt(Event, Name, ID, TargetGUID, Target, FailType, Time)
-    if 
+    if
         ID == Env.DeathGrip -- Ignore Death Grip Pull Effect for non-Blood Specs
-        or not Event or not Name or not ID or not Time or not Target 
+        or not Event or not Name or not ID or not Time or not Target
         or (self.db.profile.HideOwnTaunts and Name == PlayerName)
-        or self:IsRecentTaunt(Name, ID, Time) 
-        or not UnitIsPlayer(Name) or not (UnitInParty(Name) or UnitInRaid(Name))
-    then 
-        return; 
-    end
-    
+        or not UnitIsPlayer(Name)
+        or not (UnitInParty(Name) or UnitInRaid(Name))
+        or self:IsRecentTaunt(Name, ID, Time)
+    then return; end
+
     local OutputMessage = nil;
     local IsTaunt, TauntType;
     local OutputType;
 
-
     if (Event == "SPELL_AURA_APPLIED") then
         IsTaunt, TauntType = self:IsTaunt(ID);
-        if 
+        if
             not IsTaunt
             or (TauntType == TauntTypes.Normal and not self.db.profile.AnounceTaunts)
             or (TauntType == TauntTypes.AOE and not self.db.profile.AnounceAOETaunts)
@@ -244,14 +227,14 @@ function WhoTaunted:IsTaunt(SpellID)
         return (not not isTauntCache[SpellID]), (isTauntCache[SpellID] or "");
     end
 	local IsTaunt, TauntType = false, "";
-    
+
     if tauntListMap.SingleTarget[SpellID] then
         IsTaunt, TauntType = true, TauntTypes.Normal;
     elseif tauntListMap.AOE[SpellID] then
         IsTaunt, TauntType = true, TauntTypes.AOE;
     end
 	if (not IsTaunt) then
-		for k, v in pairs(self.TauntsList.SingleTarget) do
+		for _, v in pairs(self.TauntsList.SingleTarget) do
 			local spellTauntList = GetSpellInfo(v);
 			local spell = GetSpellInfo(SpellID);
 			if (spellTauntList) and (spell) and (spellTauntList == spell) then
@@ -262,7 +245,7 @@ function WhoTaunted:IsTaunt(SpellID)
 		end
 	end
 	if (not IsTaunt) then
-		for k, v in pairs(self.TauntsList.AOE) do
+		for _, v in pairs(self.TauntsList.AOE) do
 			local spellTauntList = GetSpellInfo(v);
 			local spell = GetSpellInfo(SpellID);
 			if (spellTauntList) and (spell) and (spellTauntList == spell) then
@@ -281,7 +264,7 @@ function WhoTaunted:IsPvPZone(MapID)
 	local IsPvPZone = false;
 
 	if (MapID) and (type(MapID) == "number") then
-		for k, v in pairs(self.PvPZoneIDs) do
+		for _, v in pairs(self.PvPZoneIDs) do
 			if (MapID == v) then
 				IsPvPZone = true;
 				break;
@@ -295,30 +278,22 @@ end
 function WhoTaunted:AddRecentTaunt(TauntName, TauntID, TauntTime)
 	if (TauntName) and (TauntID) and (TauntTime) and (type(TauntTime) == "number") then
         RecentTaunts[TauntName] = RecentTaunts[TauntName] or {};
-		table.insert(RecentTaunts[TauntName], {
-			ID = TauntID,
-			TimeStamp = TauntTime,
-		});
+		RecentTaunts[TauntName][TauntTime] = TauntID;
 	end
 end
 
 function WhoTaunted:IsRecentTaunt(TauntName, TauntID, TauntTime)
-	local IsRecentTaunt = false;
+	if TauntName and TauntID and TauntTime and RecentTaunts[TauntName] and RecentTaunts[TauntName][TauntTime] then
+        if RecentTaunts[TauntName][TauntTime] == TauntID then return true end
 
-	if (TauntName) and (TauntID) and (TauntTime) and (type(TauntTime) == "number") and (RecentTaunts[TauntName]) then
-		for k, v in pairs(RecentTaunts[TauntName]) do
-            if (v.TimeStamp == TauntTime) then
-                local spellRecentTaunt = GetSpellInfo(v.ID);
-                local spell = GetSpellInfo(TauntID);
-                if (spellRecentTaunt) and (spell) and (spellRecentTaunt == spell) then
-                    IsRecentTaunt = true;
-                    break;
-                end
-			end
-		end
+        local spellRecentTaunt = GetSpellInfo(RecentTaunts[TauntName][TauntTime]);
+        local spell = GetSpellInfo(TauntID);
+        if (spellRecentTaunt) and (spell) and (spellRecentTaunt == spell) then
+            return true;
+        end
 	end
 
-	return IsRecentTaunt;
+	return false;
 end
 
 function WhoTaunted:ClearRecentTaunts()
@@ -390,7 +365,7 @@ function WhoTaunted:OutputMessageFailed(Name, Target, Spell, ID, OutputType, Fai
 	return OutputMessage;
 end
 
-function WhoTaunted:OutPut(msg, output, dest)
+function WhoTaunted:OutPut(msg, output)
 	if (not output) or (output == "") then
 		output = self.OutputTypes.Self;
 	end
@@ -457,7 +432,7 @@ function WhoTaunted:IsChatChannel(ChannelName)
 	local IsChatChannel = false;
 
 	for i = 1, NUM_CHAT_WINDOWS, 1 do
-		for k, v in pairs({ GetChatWindowChannels(i) }) do
+		for _, v in pairs({ GetChatWindowChannels(i) }) do
 			if (self:FormatString(v) == self:FormatString(ChannelName)) then
 				IsChatChannel = true;
 				break;
@@ -479,7 +454,7 @@ function WhoTaunted:GetChatWindows()
 	local ChatWindows = {};
 
 	for i = 1, NUM_CHAT_WINDOWS, 1 do
-		local name, fontSize, r, g, b, alpha, shown, locked, docked, uninteractable = GetChatWindowInfo(i);
+		local name = GetChatWindowInfo(i);
 		if (name) and (tostring(name) ~= COMBAT_LOG) and (tostring(name) ~= VOICE) and (name:trim() ~= "") then
 			ChatWindows[tostring(name)] = tostring(name);
 
@@ -496,7 +471,7 @@ function WhoTaunted:IsChatWindow(ChatWindow)
 	local IsChatWindow = false;
 
 	for i = 1, NUM_CHAT_WINDOWS, 1 do
-		local name, fontSize, r, g, b, alpha, shown, locked, docked, uninteractable = GetChatWindowInfo(i);
+		local name = GetChatWindowInfo(i);
 		if (name) and (name:trim() ~= "") and (tostring(name) == tostring(ChatWindow)) then
 			IsChatWindow = true;
 			break;
@@ -508,7 +483,7 @@ end
 
 function WhoTaunted:PrintToChatWindow(message, ChatWindow)
 	for i = 1, NUM_CHAT_WINDOWS, 1 do
-		local name, fontSize, r, g, b, alpha, shown, locked, docked, uninteractable = GetChatWindowInfo(i);
+		local name = GetChatWindowInfo(i);
 		if (name) and (name:trim() ~= "") and (tostring(name) == tostring(ChatWindow)) then
 			self:Print(_G["ChatFrame"..i], tostring(message));
 		end
@@ -516,11 +491,11 @@ function WhoTaunted:PrintToChatWindow(message, ChatWindow)
 end
 
 function WhoTaunted:GetClassColor(Unit)
-	local _, classFilename, _ = UnitClass(Unit);
+	local _, classFilename = UnitClass(Unit);
 	local ClassColor = "00FFFFFF";
 
 	if (Unit) and (classFilename) then
-		_, _, _, ClassColor = GetClassColor(classFilename);
+		ClassColor = select(4, GetClassColor(classFilename));
 	end
 
 	return ClassColor;
@@ -529,108 +504,10 @@ end
 function WhoTaunted:GetSpellName(ID)
 	local spellName = "";
 
-	local name, _, _, _, _, _, _ = GetSpellInfo(ID);
+	local name = GetSpellInfo(ID);
 	if (name) then
 		spellName = name;
 	end
 
 	return spellName;
-end
-
-function WhoTaunted:SendCommData(commType)
-	local inCombat = InCombatLockdown();
-
-	if (inCombat == false) then
-		local CommChannel = "";
-
-		if (commType == GROUP) then
-			if (IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) or (IsInRaid(LE_PARTY_CATEGORY_INSTANCE)) then
-				CommChannel = "INSTANCE_CHAT";
-			elseif (IsInRaid(LE_PARTY_CATEGORY_HOME)) then
-				CommChannel = "RAID";
-			elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
-				CommChannel = "PARTY";
-			end
-		elseif (commType == GUILD) and (IsInGuild()) then
-			CommChannel = "GUILD";
-		end
-
-		if (CommChannel ~= "") then
-			local CommData = {ID = UserID, WhoTauntedVersion = WhoTauntedVersion };
-			self:SendCommMessage(Env.Prefix.Version, self:Serialize(CommData), CommChannel);
-		end
-	end
-end
-
-function WhoTaunted:OnCommReceived(prefix, message, distribution, sender)
-	if (prefix == Env.Prefix.Version) and (NewVersionAvailable == false) then
-		local success, VersionData = self:Deserialize(message);
-		if (success) and (VersionData) and (VersionData.WhoTauntedVersion) and (VersionData.ID ~= UserID) then
-			if (self:CompareVersions(WhoTauntedVersion, VersionData.WhoTauntedVersion) == true) then
-				NewVersionAvailable = true;
-				self:ScheduleTimer(function(self, event, ...)
-					self:Print(L["A new Who Taunted? version is available!"]..": ".."|c00FF0000"..VersionData.WhoTauntedVersion.."|r - |cffffff78https://www.curseforge.com/wow/addons/who-taunted|r");
-				end, 10);
-			end
-		end
-	end
-end
-
-function WhoTaunted:CompareVersions(Version1, Version2)
-	Version1 = Version1:gsub("-alpha", ""):gsub("-beta", ""):gsub("v", ""):trim();
-	Version2 = Version2:gsub("-alpha", ""):gsub("-beta", ""):gsub("v", ""):trim();
-
-	local a, b, c = strsplit(".", Version1);
-	if (a) then
-		Version1 = a;
-		if (b) then
-			if (tonumber(b) < 10) then
-				Version1 = Version1.."0"..b;
-			else
-				Version1 = Version1..b;
-			end
-		else
-			Version1 = Version1.."00";
-		end
-		if (c) then
-			if (tonumber(c) < 10) then
-				Version1 = Version1.."0"..c;
-			else
-				Version1 = Version1..c;
-			end
-		else
-			Version1 = Version1.."00";
-		end
-	end
-
-	local x, y, z = strsplit(".", Version2);
-	if (x) then
-		Version2 = x;
-		if (y) then
-			if (tonumber(y) < 10) then
-				Version2 = Version2.."0"..y;
-			else
-				Version2 = Version2..y;
-			end
-		else
-			Version2 = Version2.."00";
-		end
-		if (z) then
-			if (tonumber(z) < 10) then
-				Version2 = Version2.."0"..z;
-			else
-				Version2 = Version2..z;
-			end
-		else
-			Version2 = Version2.."00";
-		end
-	end
-
-	local VersionIsGreater = false;
-
-	if ((tonumber(Version1)) and (tonumber(Version2))) and (tonumber(Version2) > tonumber(Version1)) then
-		VersionIsGreater = true;
-	end
-
-	return VersionIsGreater;
 end
